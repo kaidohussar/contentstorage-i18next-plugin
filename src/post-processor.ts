@@ -76,11 +76,10 @@ export class ContentStoragePostProcessor implements PostProcessorModule {
     // Handle array of keys (fallback keys)
     const translationKey = Array.isArray(key) ? key[0] : key;
 
-    // Extract namespace from options or key
+    // Only extract namespace if key explicitly uses colon notation
+    // Don't pass namespace from options - let keys be clean by default
     let namespace: string | undefined;
-    if (options?.ns) {
-      namespace = Array.isArray(options.ns) ? options.ns[0] : options.ns;
-    } else if (translationKey.includes(':')) {
+    if (translationKey.includes(':')) {
       [namespace] = translationKey.split(':');
     }
 

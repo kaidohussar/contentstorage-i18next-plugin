@@ -174,10 +174,10 @@ describe('ContentStorageBackend', () => {
         expect(memoryMap.has('Goodbye')).toBe(true);
 
         const welcomeEntry = memoryMap.get('Welcome');
-        expect(welcomeEntry.ids.has('common.welcome')).toBe(true);
+        expect(welcomeEntry.ids.has('welcome')).toBe(true);
 
         const goodbyeEntry = memoryMap.get('Goodbye');
-        expect(goodbyeEntry.ids.has('common.nested.goodbye')).toBe(true);
+        expect(goodbyeEntry.ids.has('nested.goodbye')).toBe(true);
 
         done();
       });

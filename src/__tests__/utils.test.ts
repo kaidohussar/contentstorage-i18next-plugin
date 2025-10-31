@@ -47,16 +47,16 @@ describe('Utils', () => {
       expect(normalizeKey('common:welcome')).toBe('common.welcome');
     });
 
-    it('should prepend namespace if provided', () => {
-      expect(normalizeKey('welcome', 'common')).toBe('common.welcome');
+    it('should NOT prepend namespace by default', () => {
+      expect(normalizeKey('welcome', 'common')).toBe('welcome');
     });
 
-    it('should not duplicate namespace', () => {
+    it('should keep keys as-is when no colon notation', () => {
       expect(normalizeKey('common.welcome', 'common')).toBe('common.welcome');
     });
 
-    it('should handle nested keys', () => {
-      expect(normalizeKey('pages.home.title', 'app')).toBe('app.pages.home.title');
+    it('should handle nested keys without namespace prefix', () => {
+      expect(normalizeKey('pages.home.title', 'app')).toBe('pages.home.title');
     });
   });
 

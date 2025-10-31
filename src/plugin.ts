@@ -256,10 +256,12 @@ export class ContentStorageBackend implements BackendModule<ContentStoragePlugin
       // Skip empty values
       if (!value) continue;
 
+      // Don't pass namespace - let keys be tracked without prefix by default
+      // Only keys with explicit colon notation (e.g., "common:welcome") will have namespace
       trackTranslation(
         value,
         key,
-        namespace,
+        undefined, // namespace not passed by default
         language,
         this.options.debug
       );

@@ -139,23 +139,25 @@ export function getMemoryMap(): MemoryMap | null {
 /**
  * Normalizes i18next key format to consistent dot notation
  * Converts namespace:key format to namespace.key
+ * Only adds namespace prefix if explicitly present in the key (colon notation)
  *
  * @param key - The translation key
- * @param namespace - Optional namespace
+ * @param namespace - Optional namespace (only used if not already in key)
  * @returns Normalized key in dot notation
  */
 export function normalizeKey(key: string, namespace?: string): string {
+  // namespace parameter kept for backward compatibility but not used
+  void namespace;
+
   let normalizedKey = key;
 
-  // Convert colon notation to dot notation
+  // Convert colon notation to dot notation (e.g., "common:welcome" -> "common.welcome")
   if (normalizedKey.includes(':')) {
     normalizedKey = normalizedKey.replace(':', '.');
   }
 
-  // Prepend namespace if provided and not already in key
-  if (namespace && !normalizedKey.startsWith(`${namespace}.`)) {
-    normalizedKey = `${namespace}.${normalizedKey}`;
-  }
+  // Don't automatically prepend namespace - only if key already had it via colon notation
+  // This ensures keys match ContentStorage content IDs by default
 
   return normalizedKey;
 }
