@@ -63,6 +63,72 @@ export function initializeMemoryMap(): MemoryMap | null {
 }
 
 /**
+ * Load the ContentStorage live editor script
+ * This script enables the click-to-edit functionality in the live editor
+ */
+let liveEditorReadyPromise: Promise<boolean> | null = null;
+
+export function loadLiveEditorScript(
+  retries: number = 2,
+  delay: number = 3000,
+  debug: boolean = false
+): Promise<boolean> {
+  // Return existing promise if already loading
+  if (liveEditorReadyPromise) {
+    return liveEditorReadyPromise;
+  }
+
+  liveEditorReadyPromise = new Promise<boolean>((resolve) => {
+    const win = getContentStorageWindow();
+    if (!win) {
+      resolve(false);
+      return;
+    }
+
+    const cdnScriptUrl = 'https://cdn.contentstorage.app/live-editor.js?contentstorage-live-editor=true';
+
+    const loadScript = (attempt: number = 1) => {
+      if (debug) {
+        console.log(`[ContentStorage] Attempting to load live editor script (attempt ${attempt}/${retries})`);
+      }
+
+      const scriptElement = win.document.createElement('script');
+      scriptElement.type = 'text/javascript';
+      scriptElement.src = cdnScriptUrl;
+
+      scriptElement.onload = () => {
+        if (debug) {
+          console.log(`[ContentStorage] Live editor script loaded successfully`);
+        }
+        resolve(true);
+      };
+
+      scriptElement.onerror = (error) => {
+        // Clean up the failed script element
+        scriptElement.remove();
+
+        if (debug) {
+          console.error(`[ContentStorage] Failed to load live editor script (attempt ${attempt}/${retries})`, error);
+        }
+
+        if (attempt < retries) {
+          setTimeout(() => loadScript(attempt + 1), delay);
+        } else {
+          console.error(`[ContentStorage] All ${retries} attempts to load live editor script failed`);
+          resolve(false);
+        }
+      };
+
+      win.document.head.appendChild(scriptElement);
+    };
+
+    loadScript();
+  });
+
+  return liveEditorReadyPromise;
+}
+
+/**
  * Gets the global memory map
  */
 export function getMemoryMap(): MemoryMap | null {

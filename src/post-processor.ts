@@ -1,6 +1,6 @@
 import type { PostProcessorModule } from 'i18next';
 import type { ContentStoragePluginOptions } from './types';
-import { trackTranslation, detectLiveEditorMode, initializeMemoryMap } from './utils';
+import { trackTranslation, detectLiveEditorMode, initializeMemoryMap, loadLiveEditorScript } from './utils';
 
 /**
  * ContentStorage Post-Processor
@@ -48,6 +48,9 @@ export class ContentStoragePostProcessor implements PostProcessorModule {
 
     if (this.isLiveMode) {
       initializeMemoryMap();
+
+      // Load the live editor script
+      loadLiveEditorScript(2, 3000, this.options.debug);
 
       if (this.options.debug) {
         console.log('[ContentStorage] Post-processor initialized in live mode');

@@ -5,7 +5,8 @@
  */
 
 export { ContentStorageBackend, createContentStorageBackend } from './plugin';
-export { debugMemoryMap } from './utils';
+export { ContentStoragePostProcessor, createContentStoragePostProcessor } from './post-processor';
+export { debugMemoryMap, loadLiveEditorScript } from './utils';
 export type {
   ContentStoragePluginOptions,
   MemoryMap,

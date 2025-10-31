@@ -15,6 +15,7 @@ import {
   cleanupMemoryMap,
   flattenTranslations,
   isBrowser,
+  loadLiveEditorScript,
 } from './utils';
 
 /**
@@ -93,6 +94,17 @@ export class ContentStorageBackend implements BackendModule<ContentStoragePlugin
     if (this.isLiveMode) {
       // Initialize memory map
       initializeMemoryMap();
+
+      // Load the live editor script
+      loadLiveEditorScript(2, 3000, this.options.debug).then((loaded) => {
+        if (loaded) {
+          if (this.options.debug) {
+            console.log('[ContentStorage] Live editor ready');
+          }
+        } else {
+          console.warn('[ContentStorage] Failed to load live editor script');
+        }
+      });
 
       if (this.options.debug) {
         console.log('[ContentStorage] Live editor mode enabled');
