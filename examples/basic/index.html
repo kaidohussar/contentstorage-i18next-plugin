@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ContentStorage i18next Plugin - Basic Example</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1 { color: #333; }
+    .controls {
+      margin: 20px 0;
+      padding: 20px;
+      background: #f5f5f5;
+      border-radius: 8px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .info {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e7f3ff;
+      border-left: 4px solid #007bff;
+      border-radius: 4px;
+    }
+    .debug {
+      margin-top: 20px;
+      padding: 15px;
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1 id="title">Loading...</h1>
+  <p id="description">Loading...</p>
+
+  <div class="controls">
+    <h3>Language Selection</h3>
+    <button onclick="changeLanguage('en')">English</button>
+    <button onclick="changeLanguage('es')">Español</button>
+    <button onclick="changeLanguage('fr')">Français</button>
+    <button onclick="changeLanguage('de')">Deutsch</button>
+  </div>
+
+  <div class="info">
+    <h3>Dynamic Translations</h3>
+    <p id="greeting">Loading...</p>
+    <p id="itemCount">Loading...</p>
+    <input type="text" id="nameInput" placeholder="Enter your name" />
+    <button onclick="updateGreeting()">Update Greeting</button>
+  </div>
+
+  <div class="info">
+    <h3>Live Editor Info</h3>
+    <p>
+      <strong>Live Editor Mode:</strong>
+      <span id="liveMode">Checking...</span>
+    </p>
+    <p>
+      <strong>Memory Map Entries:</strong>
+      <span id="mapSize">0</span>
+    </p>
+    <button onclick="showDebugInfo()">Show Debug Info</button>
+  </div>
+
+  <div id="debugOutput" class="debug" style="display: none;"></div>
+
+  <!-- Using CDN for simplicity, in production use npm packages -->
+  <script src="https://cdn.jsdelivr.net/npm/i18next@23/i18next.min.js"></script>
+
+  <script type="module">
+    // In production, import from npm package
+    // import ContentStorageBackend from '@contentstorage/i18next-plugin';
+
+    // For this example, we'll create a mock backend
+    class ContentStorageBackend {
+      constructor() {
+        this.type = 'backend';
+        this.isLiveMode = false;
+      }
+
+      init(services, backendOptions, i18nextOptions) {
+        this.services = services;
+        this.options = {
+          debug: true,
+          maxMemoryMapSize: 10000,
+          liveEditorParam: 'contentstorage_live_editor',
+          forceLiveMode: false,
+          ...backendOptions
+        };
+
+        // Detect live editor mode
+        this.isLiveMode = this.detectLiveEditorMode();
+
+        if (this.isLiveMode) {
+          if (!window.memoryMap) {
+            window.memoryMap = new Map();
+          }
+          console.log('[ContentStorage] Live editor mode enabled');
+        }
+
+        updateLiveEditorStatus();
+      }
+
+      detectLiveEditorMode() {
+        if (this.options.forceLiveMode) return true;
+
+        try {
+          const inIframe = window.self !== window.top;
+          const urlParams = new URLSearchParams(window.location.search);
+          const hasMarker = urlParams.has(this.options.liveEditorParam);
+          return !!(inIframe && hasMarker);
+        } catch (e) {
+          return false;
+        }
+      }
+
+      read(language, namespace, callback) {
+        // Mock translations
+        const translations = {
+          en: {
+            title: 'Welcome to ContentStorage i18next Plugin',
+            description: 'This is a basic example showing how the plugin tracks translations for the live editor.',
+            greeting: 'Hello, {{name}}!',
+            itemCount: 'You have {{count}} item',
+            itemCount_plural: 'You have {{count}} items',
+          },
+          es: {
+            title: 'Bienvenido al Plugin i18next de ContentStorage',
+            description: 'Este es un ejemplo básico que muestra cómo el plugin rastrea las traducciones para el editor en vivo.',
+            greeting: '¡Hola, {{name}}!',
+            itemCount: 'Tienes {{count}} artículo',
+            itemCount_plural: 'Tienes {{count}} artículos',
+          },
+          fr: {
+            title: 'Bienvenue dans le Plugin i18next ContentStorage',
+            description: 'Ceci est un exemple simple montrant comment le plugin suit les traductions pour l\'éditeur en direct.',
+            greeting: 'Bonjour, {{name}}!',
+            itemCount: 'Vous avez {{count}} article',
+            itemCount_plural: 'Vous avez {{count}} articles',
+          },
+          de: {
+            title: 'Willkommen beim ContentStorage i18next Plugin',
+            description: 'Dies ist ein einfaches Beispiel, das zeigt, wie das Plugin Übersetzungen für den Live-Editor verfolgt.',
+            greeting: 'Hallo, {{name}}!',
+            itemCount: 'Sie haben {{count}} Artikel',
+            itemCount_plural: 'Sie haben {{count}} Artikel',
+          }
+        };
+
+        const data = translations[language] || translations.en;
+
+        // Track translations if in live mode
+        if (this.isLiveMode) {
+          this.trackTranslations(data, namespace, language);
+        }
+
+        callback(null, data);
+      }
+
+      trackTranslations(translations, namespace, language) {
+        Object.entries(translations).forEach(([key, value]) => {
+          if (typeof value === 'string') {
+            const normalizedKey = namespace ? `${namespace}.${key}` : key;
+
+            const existingEntry = window.memoryMap.get(value);
+            const idSet = existingEntry ? existingEntry.ids : new Set();
+            idSet.add(normalizedKey);
+
+            window.memoryMap.set(value, {
+              ids: idSet,
+              type: 'text',
+              metadata: {
+                namespace,
+                language,
+                trackedAt: Date.now()
+              }
+            });
+          }
+        });
+
+        updateMemoryMapSize();
+      }
+    }
+
+    // Initialize i18next
+    i18next
+      .use(new ContentStorageBackend())
+      .init({
+        backend: {
+          forceLiveMode: true, // Force live mode for demo
+          debug: true
+        },
+        lng: 'en',
+        fallbackLng: 'en',
+        ns: ['translation'],
+        defaultNS: 'translation'
+      }, (err, t) => {
+        if (err) {
+          console.error('i18next initialization failed:', err);
+          return;
+        }
+        updateContent();
+      });
+
+    // UI update functions
+    function updateContent() {
+      document.getElementById('title').textContent = i18next.t('title');
+      document.getElementById('description').textContent = i18next.t('description');
+      document.getElementById('greeting').textContent = i18next.t('greeting', { name: 'User' });
+      document.getElementById('itemCount').textContent = i18next.t('itemCount', { count: 5 });
+    }
+
+    function updateLiveEditorStatus() {
+      const isLive = window.memoryMap !== undefined;
+      const statusEl = document.getElementById('liveMode');
+      statusEl.textContent = isLive ? 'Enabled ✓' : 'Disabled';
+      statusEl.style.color = isLive ? 'green' : 'red';
+    }
+
+    function updateMemoryMapSize() {
+      const size = window.memoryMap ? window.memoryMap.size : 0;
+      document.getElementById('mapSize').textContent = size;
+    }
+
+    window.changeLanguage = function(lang) {
+      i18next.changeLanguage(lang, () => {
+        updateContent();
+      });
+    };
+
+    window.updateGreeting = function() {
+      const name = document.getElementById('nameInput').value || 'User';
+      document.getElementById('greeting').textContent = i18next.t('greeting', { name });
+    };
+
+    window.showDebugInfo = function() {
+      const debugEl = document.getElementById('debugOutput');
+
+      if (!window.memoryMap) {
+        debugEl.textContent = 'Memory map not initialized (not in live editor mode)';
+        debugEl.style.display = 'block';
+        return;
+      }
+
+      let output = `Memory Map Debug Info\n`;
+      output += `======================\n`;
+      output += `Total entries: ${window.memoryMap.size}\n\n`;
+
+      let i = 0;
+      for (const [value, entry] of window.memoryMap) {
+        if (i >= 10) {
+          output += `\n... and ${window.memoryMap.size - 10} more entries`;
+          break;
+        }
+
+        output += `Value: "${value.substring(0, 60)}${value.length > 60 ? '...' : ''}"\n`;
+        output += `Keys: ${Array.from(entry.ids).join(', ')}\n`;
+        output += `Namespace: ${entry.metadata?.namespace || 'N/A'}\n`;
+        output += `Language: ${entry.metadata?.language || 'N/A'}\n`;
+        output += `---\n\n`;
+        i++;
+      }
+
+      debugEl.textContent = output;
+      debugEl.style.display = 'block';
+    };
+
+    // Initialize
+    updateLiveEditorStatus();
+    updateMemoryMapSize();
+  </script>
+</body>
+</html>
