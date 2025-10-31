@@ -38,14 +38,9 @@ export interface ContentStoragePluginOptions {
   /**
    * Your ContentStorage content key
    * Used to construct CDN URLs for fetching translations
+   * Default URL format: https://cdn.contentstorage.app/{contentKey}/content/{LNG}.json
    */
   contentKey?: string;
-
-  /**
-   * Custom CDN base URL
-   * @default 'https://cdn.contentstorage.app'
-   */
-  cdnBaseUrl?: string;
 
   /**
    * Enable debug logging

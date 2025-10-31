@@ -77,7 +77,6 @@ export class ContentStorageBackend implements BackendModule<ContentStoragePlugin
     void i18nextOptions;
 
     this.options = {
-      cdnBaseUrl: 'https://cdn.contentstorage.app',
       debug: false,
       maxMemoryMapSize: 10000,
       liveEditorParam: 'contentstorage_live_editor',
@@ -187,7 +186,7 @@ export class ContentStorageBackend implements BackendModule<ContentStoragePlugin
    * Get the URL to load translations from
    */
   private getLoadPath(language: string, namespace: string): string {
-    const { loadPath, cdnBaseUrl, contentKey } = this.options;
+    const { loadPath, contentKey } = this.options;
 
     // Custom load path function
     if (typeof loadPath === 'function') {
@@ -208,7 +207,11 @@ export class ContentStorageBackend implements BackendModule<ContentStoragePlugin
       );
     }
 
-    return `${cdnBaseUrl}/${contentKey}/content/${language}/${namespace}.json`;
+    // Default: Always use uppercase language code
+    const lng = language.toUpperCase();
+
+    // Default: https://cdn.contentstorage.app/{contentKey}/content/{LNG}.json
+    return `https://cdn.contentstorage.app/${contentKey}/content/${lng}.json`;
   }
 
   /**

@@ -27,7 +27,6 @@ describe('ContentStorageBackend', () => {
       backend.init(mockServices, {}, mockOptions);
 
       expect(backend).toBeDefined();
-      expect((backend as any).options.cdnBaseUrl).toBe('https://cdn.contentstorage.app');
       expect((backend as any).options.debug).toBe(false);
       expect((backend as any).options.maxMemoryMapSize).toBe(10000);
     });
@@ -36,14 +35,12 @@ describe('ContentStorageBackend', () => {
       const customOptions = {
         debug: true,
         maxMemoryMapSize: 5000,
-        cdnBaseUrl: 'https://custom-cdn.com',
       };
 
       backend.init(mockServices, customOptions, mockOptions);
 
       expect((backend as any).options.debug).toBe(true);
       expect((backend as any).options.maxMemoryMapSize).toBe(5000);
-      expect((backend as any).options.cdnBaseUrl).toBe('https://custom-cdn.com');
     });
 
     it('should initialize memory map when in live mode', () => {
@@ -72,26 +69,25 @@ describe('ContentStorageBackend', () => {
         expect(err).toBeNull();
         expect(data).toEqual({ welcome: 'Welcome', goodbye: 'Goodbye' });
         expect(global.fetch).toHaveBeenCalledWith(
-          'https://cdn.contentstorage.app/test-key/content/en/common.json',
+          'https://cdn.contentstorage.app/test-key/content/EN.json',
           expect.any(Object)
         );
         done();
       });
     });
 
-    it('should use custom CDN URL', (done) => {
+    it('should use uppercase language code by default', (done) => {
       backend.init(
         mockServices,
         {
           contentKey: 'test-key',
-          cdnBaseUrl: 'https://my-cdn.com',
         },
         mockOptions
       );
 
-      backend.read('en', 'common', (err, data) => {
+      backend.read('fr', 'common', (err, data) => {
         expect(global.fetch).toHaveBeenCalledWith(
-          'https://my-cdn.com/test-key/content/en/common.json',
+          'https://cdn.contentstorage.app/test-key/content/FR.json',
           expect.any(Object)
         );
         done();
