@@ -1,10 +1,10 @@
 import i18next from 'i18next';
-import ContentStorageBackend, { ContentStoragePostProcessor } from '@contentstorage/i18next-plugin';
+import ContentstorageBackend, { ContentstoragePostProcessor } from '@contentstorage/i18next-plugin';
 
-// Initialize i18next with ContentStorage backend
+// Initialize i18next with Contentstorage backend
 i18next
-  .use(ContentStorageBackend)
-  .use(new ContentStoragePostProcessor({ debug: true }))
+  .use(ContentstorageBackend)
+  .use(new ContentstoragePostProcessor({ debug: true }))
   .init({
     backend: {
       contentKey: process.env.NEXT_PUBLIC_CONTENTSTORAGE_KEY || 'demo-key',
@@ -21,6 +21,9 @@ i18next
     fallbackLng: 'en',
     ns: ['common', 'homepage'],
     defaultNS: 'common',
+
+    // Enable the post-processor to track translations
+    postProcess: ['contentstorage'],
 
     interpolation: {
       escapeValue: false,

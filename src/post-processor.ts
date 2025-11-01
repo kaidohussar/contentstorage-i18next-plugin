@@ -1,9 +1,9 @@
 import type { PostProcessorModule } from 'i18next';
-import type { ContentStoragePluginOptions } from './types';
+import type { ContentstoragePluginOptions } from './types';
 import { trackTranslation, detectLiveEditorMode, initializeMemoryMap, loadLiveEditorScript } from './utils';
 
 /**
- * ContentStorage Post-Processor
+ * Contentstorage Post-Processor
  *
  * This post-processor tracks translations at the point of resolution,
  * capturing the actual values returned by i18next including interpolations
@@ -15,24 +15,24 @@ import { trackTranslation, detectLiveEditorMode, initializeMemoryMap, loadLiveEd
  * @example
  * ```typescript
  * import i18next from 'i18next';
- * import { ContentStoragePostProcessor } from '@contentstorage/i18next-plugin';
+ * import { ContentstoragePostProcessor } from '@contentstorage/i18next-plugin';
  *
  * i18next
- *   .use(new ContentStoragePostProcessor({ debug: true }))
+ *   .use(new ContentstoragePostProcessor({ debug: true }))
  *   .init({
- *     // ... your config
+ *     postProcess: ['contentstorage']
  *   });
  * ```
  */
-export class ContentStoragePostProcessor implements PostProcessorModule {
+export class ContentstoragePostProcessor implements PostProcessorModule {
   static type: 'postProcessor' = 'postProcessor';
   type: 'postProcessor' = 'postProcessor';
-  name: string = 'contentStorageTracker';
+  name: string = 'contentstorage';
 
-  private options: ContentStoragePluginOptions;
+  private options: ContentstoragePluginOptions;
   private isLiveMode: boolean = false;
 
-  constructor(options: ContentStoragePluginOptions = {}) {
+  constructor(options: ContentstoragePluginOptions = {}) {
     this.options = {
       debug: false,
       liveEditorParam: 'contentstorage_live_editor',
@@ -100,10 +100,10 @@ export class ContentStoragePostProcessor implements PostProcessorModule {
 }
 
 /**
- * Create a new instance of the ContentStorage post-processor
+ * Create a new instance of the Contentstorage post-processor
  */
-export function createContentStoragePostProcessor(
-  options?: ContentStoragePluginOptions
-): ContentStoragePostProcessor {
-  return new ContentStoragePostProcessor(options);
+export function createContentstoragePostProcessor(
+  options?: ContentstoragePluginOptions
+): ContentstoragePostProcessor {
+  return new ContentstoragePostProcessor(options);
 }

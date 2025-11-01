@@ -1,16 +1,16 @@
-import { ContentStorageBackend } from '../plugin';
+import { ContentstorageBackend } from '../plugin';
 import type { Services, InitOptions } from 'i18next';
 
 // Mock fetch
 global.fetch = jest.fn();
 
-describe('ContentStorageBackend', () => {
-  let backend: ContentStorageBackend;
+describe('ContentstorageBackend', () => {
+  let backend: ContentstorageBackend;
   let mockServices: Services;
   let mockOptions: InitOptions;
 
   beforeEach(() => {
-    backend = new ContentStorageBackend();
+    backend = new ContentstorageBackend();
     mockServices = {} as Services;
     mockOptions = {};
 

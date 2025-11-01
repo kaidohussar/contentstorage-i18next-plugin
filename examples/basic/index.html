@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ContentStorage i18next Plugin - Basic Example</title>
+  <title>Contentstorage i18next Plugin - Basic Example</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -90,10 +90,10 @@
 
   <script type="module">
     // In production, import from npm package
-    // import ContentStorageBackend from '@contentstorage/i18next-plugin';
+    // import ContentstorageBackend from '@contentstorage/i18next-plugin';
 
     // For this example, we'll create a mock backend
-    class ContentStorageBackend {
+    class ContentstorageBackend {
       constructor() {
         this.type = 'backend';
         this.isLiveMode = false;
@@ -116,7 +116,7 @@
           if (!window.memoryMap) {
             window.memoryMap = new Map();
           }
-          console.log('[ContentStorage] Live editor mode enabled');
+          console.log('[Contentstorage] Live editor mode enabled');
         }
 
         updateLiveEditorStatus();
@@ -139,28 +139,28 @@
         // Mock translations
         const translations = {
           en: {
-            title: 'Welcome to ContentStorage i18next Plugin',
+            title: 'Welcome to Contentstorage i18next Plugin',
             description: 'This is a basic example showing how the plugin tracks translations for the live editor.',
             greeting: 'Hello, {{name}}!',
             itemCount: 'You have {{count}} item',
             itemCount_plural: 'You have {{count}} items',
           },
           es: {
-            title: 'Bienvenido al Plugin i18next de ContentStorage',
+            title: 'Bienvenido al Plugin i18next de Contentstorage',
             description: 'Este es un ejemplo básico que muestra cómo el plugin rastrea las traducciones para el editor en vivo.',
             greeting: '¡Hola, {{name}}!',
             itemCount: 'Tienes {{count}} artículo',
             itemCount_plural: 'Tienes {{count}} artículos',
           },
           fr: {
-            title: 'Bienvenue dans le Plugin i18next ContentStorage',
+            title: 'Bienvenue dans le Plugin i18next Contentstorage',
             description: 'Ceci est un exemple simple montrant comment le plugin suit les traductions pour l\'éditeur en direct.',
             greeting: 'Bonjour, {{name}}!',
             itemCount: 'Vous avez {{count}} article',
             itemCount_plural: 'Vous avez {{count}} articles',
           },
           de: {
-            title: 'Willkommen beim ContentStorage i18next Plugin',
+            title: 'Willkommen beim Contentstorage i18next Plugin',
             description: 'Dies ist ein einfaches Beispiel, das zeigt, wie das Plugin Übersetzungen für den Live-Editor verfolgt.',
             greeting: 'Hallo, {{name}}!',
             itemCount: 'Sie haben {{count}} Artikel',
@@ -205,7 +205,7 @@
 
     // Initialize i18next
     i18next
-      .use(new ContentStorageBackend())
+      .use(new ContentstorageBackend())
       .init({
         backend: {
           forceLiveMode: true, // Force live mode for demo

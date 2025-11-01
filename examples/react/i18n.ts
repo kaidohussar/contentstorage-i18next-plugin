@@ -1,17 +1,17 @@
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import ContentStorageBackend, { ContentStoragePostProcessor } from '@contentstorage/i18next-plugin';
+import ContentstorageBackend, { ContentstoragePostProcessor } from '@contentstorage/i18next-plugin';
 
 i18next
-  // Use the ContentStorage backend
-  .use(ContentStorageBackend)
+  // Use the Contentstorage backend
+  .use(ContentstorageBackend)
   // Use the post-processor for tracking dynamic translations
-  .use(new ContentStoragePostProcessor({ debug: true }))
+  .use(new ContentstoragePostProcessor({ debug: true }))
   // React integration
   .use(initReactI18next)
   .init({
     backend: {
-      // Get your content key from ContentStorage dashboard
+      // Get your content key from Contentstorage dashboard
       contentKey: process.env.REACT_APP_CONTENTSTORAGE_KEY || 'demo-key',
 
       // Enable debug mode in development
@@ -32,6 +32,9 @@ i18next
 
     ns: ['translation'],
     defaultNS: 'translation',
+
+    // Enable the post-processor to track translations in React components
+    postProcess: ['contentstorage'],
 
     interpolation: {
       escapeValue: false, // React already escapes

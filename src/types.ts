@@ -24,9 +24,9 @@ export interface MemoryMapEntry {
 export type MemoryMap = Map<string, MemoryMapEntry>;
 
 /**
- * Window interface extended with ContentStorage properties
+ * Window interface extended with Contentstorage properties
  */
-export interface ContentStorageWindow extends Window {
+export interface ContentstorageWindow extends Window {
   memoryMap?: MemoryMap;
   __contentStorageDebug?: boolean;
 }
@@ -34,7 +34,7 @@ export interface ContentStorageWindow extends Window {
 /**
  * Plugin configuration options
  */
-export interface ContentStoragePluginOptions {
+export interface ContentstoragePluginOptions {
   /**
    * Your ContentStorage content key
    * Used to construct CDN URLs for fetching translations

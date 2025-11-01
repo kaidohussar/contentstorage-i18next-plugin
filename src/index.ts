@@ -1,17 +1,17 @@
 /**
  * @contentstorage/i18next-plugin
  *
- * i18next backend plugin for ContentStorage live editor translation tracking
+ * i18next backend plugin for Contentstorage live editor translation tracking
  */
 
-export { ContentStorageBackend, createContentStorageBackend } from './plugin';
-export { ContentStoragePostProcessor, createContentStoragePostProcessor } from './post-processor';
+export { ContentstorageBackend, createContentstorageBackend } from './plugin';
+export { ContentstoragePostProcessor, createContentstoragePostProcessor } from './post-processor';
 export { debugMemoryMap, loadLiveEditorScript } from './utils';
 export type {
-  ContentStoragePluginOptions,
+  ContentstoragePluginOptions,
   MemoryMap,
   MemoryMapEntry,
-  ContentStorageWindow,
+  ContentstorageWindow,
   TranslationData,
 } from './types';
 

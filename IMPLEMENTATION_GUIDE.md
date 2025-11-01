@@ -14,13 +14,13 @@ Create an `i18n.js` or `i18n.ts` file:
 
 ```javascript
 import i18next from 'i18next';
-import ContentStorageBackend from '@contentstorage/i18next-plugin';
+import ContentstorageBackend from '@contentstorage/i18next-plugin';
 
 i18next
-  .use(ContentStorageBackend)
+  .use(ContentstorageBackend)
   .init({
     backend: {
-      contentKey: 'YOUR_CONTENTSTORAGE_KEY', // Get this from ContentStorage dashboard
+      contentKey: 'YOUR_CONTENTSTORAGE_KEY', // Get this from Contentstorage dashboard
     },
     lng: 'en',              // Default language
     fallbackLng: 'en',      // Fallback language
@@ -48,10 +48,10 @@ i18next.on('loaded', () => {
 // i18n.js
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import ContentStorageBackend from '@contentstorage/i18next-plugin';
+import ContentstorageBackend from '@contentstorage/i18next-plugin';
 
 i18next
-  .use(ContentStorageBackend)
+  .use(ContentstorageBackend)
   .use(initReactI18next)
   .init({
     backend: {
@@ -81,8 +81,8 @@ function App() {
 
 ## How It Works
 
-1. **In Production**: Plugin loads translations from ContentStorage CDN - zero tracking overhead
-2. **In Live Editor**: When your app opens in ContentStorage editor with `?contentstorage_live_editor=true`:
+1. **In Production**: Plugin loads translations from Contentstorage CDN - zero tracking overhead
+2. **In Live Editor**: When your app opens in Contentstorage editor with `?contentstorage_live_editor=true`:
    - Plugin detects iframe + URL parameter
    - Creates `window.memoryMap` to track translations
    - Maps translated text → translation keys
@@ -139,13 +139,13 @@ function App() {
 For better tracking of dynamic translations with variables:
 
 ```javascript
-import ContentStorageBackend, {
-  ContentStoragePostProcessor
+import ContentstorageBackend, {
+  ContentstoragePostProcessor
 } from '@contentstorage/i18next-plugin';
 
 i18next
-  .use(ContentStorageBackend)
-  .use(new ContentStoragePostProcessor({ debug: true }))
+  .use(ContentstorageBackend)
+  .use(new ContentstoragePostProcessor({ debug: true }))
   .init({...});
 
 // Now these are tracked correctly:
@@ -158,9 +158,9 @@ i18next.t('items', { count: 5 });        // "5 items"
 ```javascript
 // app/i18n.ts
 import i18next from 'i18next';
-import ContentStorageBackend from '@contentstorage/i18next-plugin';
+import ContentstorageBackend from '@contentstorage/i18next-plugin';
 
-i18next.use(ContentStorageBackend).init({
+i18next.use(ContentstorageBackend).init({
   backend: {
     contentKey: process.env.NEXT_PUBLIC_CONTENTSTORAGE_KEY,
   },
@@ -194,7 +194,7 @@ export default function Page() {
 ### Enable Debug Mode
 
 ```javascript
-i18next.use(ContentStorageBackend).init({
+i18next.use(ContentstorageBackend).init({
   backend: { debug: true },
   debug: true, // Also enable i18next debug
 });
@@ -214,7 +214,7 @@ debugMemoryMap();
 ### Force Live Mode (Testing)
 
 ```javascript
-i18next.use(ContentStorageBackend).init({
+i18next.use(ContentstorageBackend).init({
   backend: {
     forceLiveMode: true, // Always enable tracking
   },
@@ -273,7 +273,7 @@ NEXT_PUBLIC_CONTENTSTORAGE_KEY=your-key-here
 ## That's It!
 
 Your app now:
-- ✅ Loads translations from ContentStorage
+- ✅ Loads translations from Contentstorage
 - ✅ Works normally in production
 - ✅ Enables click-to-edit in live editor
 

@@ -1,4 +1,4 @@
-import type { ContentStorageWindow, MemoryMap, MemoryMapEntry } from './types';
+import type { ContentstorageWindow, MemoryMap, MemoryMapEntry } from './types';
 
 /**
  * Checks if the code is running in a browser environment
@@ -8,11 +8,11 @@ export function isBrowser(): boolean {
 }
 
 /**
- * Gets the ContentStorage window object with type safety
+ * Gets the Contentstorage window object with type safety
  */
-export function getContentStorageWindow(): ContentStorageWindow | null {
+export function getContentstorageWindow(): ContentstorageWindow | null {
   if (!isBrowser()) return null;
-  return window as ContentStorageWindow;
+  return window as ContentstorageWindow;
 }
 
 /**
@@ -30,7 +30,7 @@ export function detectLiveEditorMode(
   if (!isBrowser()) return false;
 
   try {
-    const win = getContentStorageWindow();
+    const win = getContentstorageWindow();
     if (!win) return false;
 
     // Check 1: Running in an iframe
@@ -52,7 +52,7 @@ export function detectLiveEditorMode(
  * Initializes the global memory map if it doesn't exist
  */
 export function initializeMemoryMap(): MemoryMap | null {
-  const win = getContentStorageWindow();
+  const win = getContentstorageWindow();
   if (!win) return null;
 
   if (!win.memoryMap) {
@@ -79,7 +79,7 @@ export function loadLiveEditorScript(
   }
 
   liveEditorReadyPromise = new Promise<boolean>((resolve) => {
-    const win = getContentStorageWindow();
+    const win = getContentstorageWindow();
     if (!win) {
       resolve(false);
       return;
@@ -132,7 +132,7 @@ export function loadLiveEditorScript(
  * Gets the global memory map
  */
 export function getMemoryMap(): MemoryMap | null {
-  const win = getContentStorageWindow();
+  const win = getContentstorageWindow();
   return win?.memoryMap || null;
 }
 

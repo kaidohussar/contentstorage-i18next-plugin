@@ -5,7 +5,7 @@ import type {
   InitOptions,
 } from 'i18next';
 import type {
-  ContentStoragePluginOptions,
+  ContentstoragePluginOptions,
   TranslationData,
 } from './types';
 import {
@@ -19,9 +19,9 @@ import {
 } from './utils';
 
 /**
- * ContentStorage i18next Backend Plugin
+ * Contentstorage i18next Backend Plugin
  *
- * This plugin enables translation tracking for the ContentStorage live editor
+ * This plugin enables translation tracking for the Contentstorage live editor
  * by maintaining a memory map of translations and their keys.
  *
  * Features:
@@ -34,10 +34,10 @@ import {
  * @example
  * ```typescript
  * import i18next from 'i18next';
- * import ContentStorageBackend from '@contentstorage/i18next-plugin';
+ * import ContentstorageBackend from '@contentstorage/i18next-plugin';
  *
  * i18next
- *   .use(ContentStorageBackend)
+ *   .use(ContentstorageBackend)
  *   .init({
  *     backend: {
  *       contentKey: 'your-content-key',
@@ -46,14 +46,14 @@ import {
  *   });
  * ```
  */
-export class ContentStorageBackend implements BackendModule<ContentStoragePluginOptions> {
+export class ContentstorageBackend implements BackendModule<ContentstoragePluginOptions> {
   static type: 'backend' = 'backend';
   type: 'backend' = 'backend';
 
-  private options: ContentStoragePluginOptions;
+  private options: ContentstoragePluginOptions;
   private isLiveMode: boolean = false;
 
-  constructor(_services?: Services, options?: ContentStoragePluginOptions, _i18nextOptions?: InitOptions) {
+  constructor(_services?: Services, options?: ContentstoragePluginOptions, _i18nextOptions?: InitOptions) {
     this.options = options || {};
 
     // Initialize if services and i18nextOptions are provided
@@ -69,7 +69,7 @@ export class ContentStorageBackend implements BackendModule<ContentStoragePlugin
    */
   init(
     services: Services,
-    backendOptions: ContentStoragePluginOptions = {},
+    backendOptions: ContentstoragePluginOptions = {},
     i18nextOptions: InitOptions = {}
   ): void {
     // Store services and i18nextOptions for potential future use
@@ -276,13 +276,13 @@ export class ContentStorageBackend implements BackendModule<ContentStoragePlugin
 }
 
 /**
- * Create a new instance of the ContentStorage backend
+ * Create a new instance of the Contentstorage backend
  */
-export function createContentStorageBackend(
-  options?: ContentStoragePluginOptions
-): ContentStorageBackend {
-  return new ContentStorageBackend(undefined, options);
+export function createContentstorageBackend(
+  options?: ContentstoragePluginOptions
+): ContentstorageBackend {
+  return new ContentstorageBackend(undefined, options);
 }
 
 // Default export
-export default ContentStorageBackend;
+export default ContentstorageBackend;

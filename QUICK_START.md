@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-Get up and running with ContentStorage i18next plugin in 5 minutes.
+Get up and running with Contentstorage i18next plugin in 5 minutes.
 
 ## Installation
 
@@ -15,13 +15,13 @@ npm install @contentstorage/i18next-plugin i18next
 ```typescript
 // i18n.ts
 import i18next from 'i18next';
-import ContentStorageBackend from '@contentstorage/i18next-plugin';
+import ContentstorageBackend from '@contentstorage/i18next-plugin';
 
 i18next
-  .use(ContentStorageBackend)
+  .use(ContentstorageBackend)
   .init({
     backend: {
-      contentKey: 'YOUR_CONTENT_KEY', // Get from ContentStorage dashboard
+      contentKey: 'YOUR_CONTENT_KEY', // Get from Contentstorage dashboard
     },
     lng: 'en',
     fallbackLng: 'en',
@@ -53,8 +53,8 @@ i18next.init({...}, (err, t) => {
 ### Step 3: Test in Live Editor
 
 1. Open your app with: `http://localhost:3000?contentstorage_live_editor=true`
-2. Embed in an iframe (or use ContentStorage live editor)
-3. Check console: `[ContentStorage] Live editor mode enabled`
+2. Embed in an iframe (or use Contentstorage live editor)
+3. Check console: `[Contentstorage] Live editor mode enabled`
 4. Click on translated text to edit
 
 ## React Setup
@@ -63,10 +63,10 @@ i18next.init({...}, (err, t) => {
 // i18n.ts
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import ContentStorageBackend from '@contentstorage/i18next-plugin';
+import ContentstorageBackend from '@contentstorage/i18next-plugin';
 
 i18next
-  .use(ContentStorageBackend)
+  .use(ContentstorageBackend)
   .use(initReactI18next)
   .init({
     backend: {
@@ -102,9 +102,9 @@ function App() {
 ```typescript
 // app/i18n.ts
 import i18next from 'i18next';
-import ContentStorageBackend from '@contentstorage/i18next-plugin';
+import ContentstorageBackend from '@contentstorage/i18next-plugin';
 
-i18next.use(ContentStorageBackend).init({
+i18next.use(ContentstorageBackend).init({
   backend: {
     contentKey: process.env.NEXT_PUBLIC_CONTENTSTORAGE_KEY,
   },
@@ -138,7 +138,7 @@ export default function Page() {
 ### Debug Mode
 
 ```typescript
-i18next.use(ContentStorageBackend).init({
+i18next.use(ContentstorageBackend).init({
   backend: {
     contentKey: 'YOUR_KEY',
     debug: true, // Enable detailed logging
@@ -149,7 +149,7 @@ i18next.use(ContentStorageBackend).init({
 ### Custom CDN
 
 ```typescript
-i18next.use(ContentStorageBackend).init({
+i18next.use(ContentstorageBackend).init({
   backend: {
     contentKey: 'YOUR_KEY',
     cdnBaseUrl: 'https://your-cdn.com',
@@ -160,7 +160,7 @@ i18next.use(ContentStorageBackend).init({
 ### Custom Load Path
 
 ```typescript
-i18next.use(ContentStorageBackend).init({
+i18next.use(ContentstorageBackend).init({
   backend: {
     loadPath: '/locales/{{lng}}/{{ns}}.json',
   },
@@ -170,13 +170,13 @@ i18next.use(ContentStorageBackend).init({
 ### Track Dynamic Translations
 
 ```typescript
-import ContentStorageBackend, {
-  ContentStoragePostProcessor
+import ContentstorageBackend, {
+  ContentstoragePostProcessor
 } from '@contentstorage/i18next-plugin';
 
 i18next
-  .use(ContentStorageBackend)
-  .use(new ContentStoragePostProcessor({ debug: true }))
+  .use(ContentstorageBackend)
+  .use(new ContentstoragePostProcessor({ debug: true }))
   .init({...});
 
 // Now interpolations are tracked correctly
@@ -206,7 +206,7 @@ debugMemoryMap();
 
 ```typescript
 // Force live mode for local testing
-i18next.use(ContentStorageBackend).init({
+i18next.use(ContentstorageBackend).init({
   backend: {
     contentKey: 'YOUR_KEY',
     forceLiveMode: true, // Always enable tracking
@@ -277,13 +277,13 @@ src/
 // Complete example with all features
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import ContentStorageBackend, {
-  ContentStoragePostProcessor,
+import ContentstorageBackend, {
+  ContentstoragePostProcessor,
 } from '@contentstorage/i18next-plugin';
 
 i18next
-  .use(ContentStorageBackend)
-  .use(new ContentStoragePostProcessor({ debug: true }))
+  .use(ContentstorageBackend)
+  .use(new ContentstoragePostProcessor({ debug: true }))
   .use(initReactI18next)
   .init({
     backend: {
