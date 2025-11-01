@@ -43,20 +43,23 @@ The Contentstorage i18next plugin enables **click-to-edit functionality** in the
 
 The plugin consists of two main components:
 
-### 1. Live Editor Post-Processor (Required for Live Editor)
-Tracks translations as they're used in your application to enable click-to-edit functionality:
+### 1. Backend Plugin (Recommended)
+Loads translations from Contentstorage CDN and **automatically enables live editor tracking**:
+```
+Fetches: https://cdn.contentstorage.app/{contentKey}/content/EN.json
+Auto-registers: Live editor post-processor for click-to-edit
+```
+
+**When you use the backend plugin, live editor support is automatic - no extra config needed!**
+
+### 2. Live Editor Post-Processor (Standalone)
+Can be used independently with inline resources or other backends:
 ```
 User sees: "Welcome to our site"
 Plugin tracks: text="Welcome to our site" → contentId="welcome"
 ```
 
-### 2. Backend (Optional)
-Loads translations from Contentstorage CDN:
-```
-Fetches: https://cdn.contentstorage.app/{contentKey}/content/EN.json
-```
-
-**For Live Editor highlighting, you only need the post-processor.**
+**Note:** When using standalone post-processor (without the backend), you must add `postProcess: ['contentstorage']` to your i18next config.
 
 ---
 
@@ -80,7 +83,32 @@ pnpm add @contentstorage/i18next-plugin
 
 ## Quick Start
 
-The fastest way to enable Live Editor support:
+### Option 1: Using Contentstorage Backend (Easiest)
+
+The backend plugin automatically enables live editor tracking:
+
+```typescript
+import i18next from 'i18next';
+import ContentstorageBackend from '@contentstorage/i18next-plugin';
+
+i18next
+  .use(ContentstorageBackend)
+  .init({
+    backend: {
+      contentKey: 'your-content-key',
+    },
+    lng: 'en',
+    fallbackLng: 'en',
+  });
+```
+
+**That's it!** Live editor tracking is automatically enabled. No `postProcess` config needed.
+
+---
+
+### Option 2: Using Inline Resources
+
+If you're using inline resources, add the post-processor:
 
 ```typescript
 import i18next from 'i18next';
@@ -89,17 +117,12 @@ import { ContentstorageLiveEditorPostProcessor } from '@contentstorage/i18next-p
 i18next
   .use(new ContentstorageLiveEditorPostProcessor())
   .init({
-    // Your existing i18next config
     resources: {
       en: { translation: { welcome: "Welcome" } }
     },
-
-    // Required: Enable the post-processor
-    postProcess: ['contentstorage'],
+    postProcess: ['contentstorage'], // Required for standalone post-processor
   });
 ```
-
-**That's it!** Your app is now ready for Live Editor.
 
 ---
 
@@ -171,27 +194,25 @@ i18next
 
 ```typescript
 import i18next from 'i18next';
-import { ContentstorageBackend, ContentstoragePostProcessor } from '@contentstorage/i18next-plugin';
+import ContentstorageBackend from '@contentstorage/i18next-plugin';
 
 i18next
   .use(ContentstorageBackend)
-  .use(new ContentstorageLiveEditorPostProcessor({ debug: true }))
   .init({
     backend: {
       contentKey: 'your-content-key', // Get this from Contentstorage dashboard
+      debug: true,
     },
     lng: 'en',
     fallbackLng: 'en',
-
-    // Enable tracking for Live Editor
-    postProcess: ['contentstorage'],
   });
 ```
 
 **Benefits:**
 - Single source of truth for translations
 - Automatic CDN delivery
-- Built-in tracking
+- **Automatic live editor tracking** (no postProcess config needed!)
+- Zero configuration for live editor support
 
 ---
 

@@ -22,6 +22,8 @@ npm install @contentstorage/i18next-plugin
 
 ### Basic Usage (Backend Plugin)
 
+The backend plugin automatically enables live editor tracking - no extra configuration needed!
+
 ```typescript
 import i18next from 'i18next';
 import ContentstorageBackend from '@contentstorage/i18next-plugin';
@@ -41,25 +43,32 @@ i18next
 
 // Use translations as normal
 i18next.t('common:welcome'); // "Welcome to our site"
+
+// Live editor tracking is automatically enabled when in live editor mode!
 ```
 
-### With Live Editor Post-Processor (Recommended)
+### With Inline Resources (No Backend)
 
-For better tracking of dynamic translations with interpolations:
+If you're using inline resources instead of loading from CDN, you need to explicitly add the post-processor:
 
 ```typescript
 import i18next from 'i18next';
-import ContentstorageBackend, { ContentstorageLiveEditorPostProcessor } from '@contentstorage/i18next-plugin';
+import { ContentstorageLiveEditorPostProcessor } from '@contentstorage/i18next-plugin';
 
 i18next
-  .use(ContentstorageBackend)
   .use(new ContentstorageLiveEditorPostProcessor({ debug: false }))
   .init({
-    backend: {
-      contentKey: 'your-content-key',
+    resources: {
+      en: {
+        translation: {
+          welcome: 'Welcome to our site',
+          greeting: 'Hello {{name}}'
+        }
+      }
     },
     lng: 'en',
     fallbackLng: 'en',
+    postProcess: ['contentstorage'], // Required when using post-processor standalone
   });
 
 // Interpolated translations are tracked correctly

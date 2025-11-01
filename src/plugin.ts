@@ -17,6 +17,7 @@ import {
   isBrowser,
   loadLiveEditorScript,
 } from './utils';
+import { ContentstorageLiveEditorPostProcessor } from './post-processor';
 
 /**
  * Contentstorage i18next Backend Plugin
@@ -52,6 +53,7 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
 
   private options: ContentstoragePluginOptions;
   private isLiveMode: boolean = false;
+  private postProcessor?: ContentstorageLiveEditorPostProcessor;
 
   constructor(_services?: Services, options?: ContentstoragePluginOptions, _i18nextOptions?: InitOptions) {
     this.options = options || {};
@@ -72,10 +74,6 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
     backendOptions: ContentstoragePluginOptions = {},
     i18nextOptions: InitOptions = {}
   ): void {
-    // Store services and i18nextOptions for potential future use
-    // Note: Currently not used but kept in signature for i18next compatibility
-    void services;
-    void i18nextOptions;
 
     this.options = {
       debug: false,
@@ -106,12 +104,44 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
         }
       });
 
+      // Auto-register the post-processor for live editor tracking
+      this.registerPostProcessor(services, i18nextOptions);
+
       if (this.options.debug) {
         console.log('[ContentStorage] Live editor mode enabled');
+        console.log('[ContentStorage] Post-processor auto-registered');
         console.log('[ContentStorage] Plugin initialized with options:', this.options);
       }
     } else if (this.options.debug) {
       console.log('[ContentStorage] Running in normal mode (not live editor)');
+    }
+  }
+
+  /**
+   * Auto-register the live editor post-processor
+   * This allows dynamic translation tracking without requiring explicit postProcess config
+   */
+  private registerPostProcessor(services: Services, i18nextOptions: InitOptions): void {
+    // Create post-processor instance
+    this.postProcessor = new ContentstorageLiveEditorPostProcessor(this.options);
+
+    // Register with i18next
+    services.languageUtils?.addPostProcessor(this.postProcessor);
+
+    // Add to postProcess array if it exists, otherwise create it
+    const initOptions = i18nextOptions as any;
+    if (!initOptions.postProcess) {
+      initOptions.postProcess = [];
+    }
+
+    // Ensure postProcess is an array
+    if (!Array.isArray(initOptions.postProcess)) {
+      initOptions.postProcess = [initOptions.postProcess];
+    }
+
+    // Add our post-processor if not already present
+    if (!initOptions.postProcess.includes('contentstorage')) {
+      initOptions.postProcess.push('contentstorage');
     }
   }
 
