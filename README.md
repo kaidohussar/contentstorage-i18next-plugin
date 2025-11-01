@@ -10,7 +10,7 @@ Official i18next plugin for [Contentstorage](https://contentstorage.app) live ed
 - **TypeScript Support** - Full type definitions included
 - **Memory Management** - Automatic cleanup of old entries to prevent memory leaks
 - **Flexible Loading** - Support for CDN, custom URLs, or custom fetch functions
-- **Post-Processor Support** - Track translations at resolution time for dynamic content
+- **Live Editor Post-Processor** - Track translations at resolution time for click-to-edit functionality
 
 ## Installation
 
@@ -43,17 +43,17 @@ i18next
 i18next.t('common:welcome'); // "Welcome to our site"
 ```
 
-### With Post-Processor (Recommended)
+### With Live Editor Post-Processor (Recommended)
 
 For better tracking of dynamic translations with interpolations:
 
 ```typescript
 import i18next from 'i18next';
-import ContentstorageBackend, { ContentstoragePostProcessor } from '@contentstorage/i18next-plugin';
+import ContentstorageBackend, { ContentstorageLiveEditorPostProcessor } from '@contentstorage/i18next-plugin';
 
 i18next
   .use(ContentstorageBackend)
-  .use(new ContentstoragePostProcessor({ debug: false }))
+  .use(new ContentstorageLiveEditorPostProcessor({ debug: false }))
   .init({
     backend: {
       contentKey: 'your-content-key',
@@ -200,7 +200,7 @@ i18next.use(ContentstorageBackend).init({
 ```typescript
 i18next
   .use(ContentstorageBackend)
-  .use(new ContentstoragePostProcessor({ debug: true }))
+  .use(new ContentstorageLiveEditorPostProcessor({ debug: true }))
   .init({
     backend: {
       contentKey: 'your-key',

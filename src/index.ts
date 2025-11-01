@@ -5,7 +5,10 @@
  */
 
 export { ContentstorageBackend, createContentstorageBackend } from './plugin';
-export { ContentstoragePostProcessor, createContentstoragePostProcessor } from './post-processor';
+export {
+  ContentstorageLiveEditorPostProcessor,
+  createContentstorageLiveEditorPostProcessor,
+} from './post-processor';
 export { debugMemoryMap, loadLiveEditorScript } from './utils';
 export type {
   ContentstoragePluginOptions,

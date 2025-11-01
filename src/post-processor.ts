@@ -3,28 +3,29 @@ import type { ContentstoragePluginOptions } from './types';
 import { trackTranslation, detectLiveEditorMode, initializeMemoryMap, loadLiveEditorScript } from './utils';
 
 /**
- * Contentstorage Post-Processor
+ * Contentstorage Live Editor Post-Processor
  *
- * This post-processor tracks translations at the point of resolution,
- * capturing the actual values returned by i18next including interpolations
- * and plural forms.
+ * This post-processor enables live editor functionality by tracking translations
+ * at the point of resolution, capturing the actual values returned by i18next
+ * including interpolations and plural forms.
  *
- * Use this in addition to or instead of the backend plugin for more
- * comprehensive tracking, especially for dynamic translations.
+ * Use this to enable click-to-edit functionality in the Contentstorage live editor.
+ * It works in addition to or instead of the backend plugin for more comprehensive
+ * tracking, especially for dynamic translations.
  *
  * @example
  * ```typescript
  * import i18next from 'i18next';
- * import { ContentstoragePostProcessor } from '@contentstorage/i18next-plugin';
+ * import { ContentstorageLiveEditorPostProcessor } from '@contentstorage/i18next-plugin';
  *
  * i18next
- *   .use(new ContentstoragePostProcessor({ debug: true }))
+ *   .use(new ContentstorageLiveEditorPostProcessor({ debug: true }))
  *   .init({
  *     postProcess: ['contentstorage']
  *   });
  * ```
  */
-export class ContentstoragePostProcessor implements PostProcessorModule {
+export class ContentstorageLiveEditorPostProcessor implements PostProcessorModule {
   static type: 'postProcessor' = 'postProcessor';
   type: 'postProcessor' = 'postProcessor';
   name: string = 'contentstorage';
@@ -100,10 +101,10 @@ export class ContentstoragePostProcessor implements PostProcessorModule {
 }
 
 /**
- * Create a new instance of the Contentstorage post-processor
+ * Create a new instance of the Contentstorage Live Editor post-processor
  */
-export function createContentstoragePostProcessor(
+export function createContentstorageLiveEditorPostProcessor(
   options?: ContentstoragePluginOptions
-): ContentstoragePostProcessor {
-  return new ContentstoragePostProcessor(options);
+): ContentstorageLiveEditorPostProcessor {
+  return new ContentstorageLiveEditorPostProcessor(options);
 }
