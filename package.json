@@ -1,6 +1,6 @@
 {
   "name": "@contentstorage/i18next-plugin",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "i18next plugin for Contentstorage live editor translation tracking",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
