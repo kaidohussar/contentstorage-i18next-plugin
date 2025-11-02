@@ -25,7 +25,7 @@
     "i18n",
     "internationalization"
   ],
-  "author": "ContentStorage",
+  "author": "Kaido Hussar <kaido@contentstorage.app>",
   "license": "MIT",
   "peerDependencies": {
     "i18next": ">=21.0.0"
