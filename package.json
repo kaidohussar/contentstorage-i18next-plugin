@@ -2,6 +2,7 @@
   "name": "@contentstorage/i18next-plugin",
   "version": "2.0.3",
   "description": "i18next plugin for Contentstorage live editor translation tracking",
+  "author": "Kaido Hussar <kaido@contentstorage.app>",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
@@ -25,7 +26,6 @@
     "i18n",
     "internationalization"
   ],
-  "author": "Kaido Hussar <kaido@contentstorage.app>",
   "license": "MIT",
   "peerDependencies": {
     "i18next": ">=21.0.0"
