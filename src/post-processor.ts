@@ -51,7 +51,7 @@ export class ContentstorageLiveEditorPostProcessor implements PostProcessorModul
       initializeMemoryMap();
 
       // Load the live editor script
-      loadLiveEditorScript(2, 3000, this.options.debug);
+      loadLiveEditorScript(2, 3000, this.options.debug, this.options.customLiveEditorScriptUrl);
 
       if (this.options.debug) {
         console.log('[ContentStorage] Post-processor initialized in live mode');

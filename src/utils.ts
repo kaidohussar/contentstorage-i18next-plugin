@@ -71,7 +71,8 @@ let liveEditorReadyPromise: Promise<boolean> | null = null;
 export function loadLiveEditorScript(
   retries: number = 2,
   delay: number = 3000,
-  debug: boolean = false
+  debug: boolean = false,
+  customScriptUrl?: string
 ): Promise<boolean> {
   // Return existing promise if already loading
   if (liveEditorReadyPromise) {
@@ -85,7 +86,7 @@ export function loadLiveEditorScript(
       return;
     }
 
-    const cdnScriptUrl = 'https://cdn.contentstorage.app/live-editor.js?contentstorage-live-editor=true';
+    const cdnScriptUrl = customScriptUrl || 'https://cdn.contentstorage.app/live-editor.js?contentstorage-live-editor=true';
 
     const loadScript = (attempt: number = 1) => {
       if (debug) {

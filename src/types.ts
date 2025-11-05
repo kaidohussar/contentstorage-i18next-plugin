@@ -83,6 +83,13 @@ export interface ContentstoragePluginOptions {
   forceLiveMode?: boolean;
 
   /**
+   * Custom URL for the live editor script
+   * If not provided, uses default CDN URL
+   * @default 'https://cdn.contentstorage.app/live-editor.js?contentstorage-live-editor=true'
+   */
+  customLiveEditorScriptUrl?: string;
+
+  /**
    * Namespaces to track
    * If specified, only these namespaces will be tracked
    * If not specified, all namespaces are tracked

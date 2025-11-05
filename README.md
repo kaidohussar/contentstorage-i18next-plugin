@@ -129,6 +129,13 @@ interface ContentstoragePluginOptions {
   forceLiveMode?: boolean;
 
   /**
+   * Custom URL for the live editor script
+   * If not provided, uses default CDN URL
+   * @default 'https://cdn.contentstorage.app/live-editor.js?contentstorage-live-editor=true'
+   */
+  customLiveEditorScriptUrl?: string;
+
+  /**
    * Only track specific namespaces
    */
   trackNamespaces?: string[];
@@ -146,6 +153,29 @@ i18next.use(ContentstorageBackend).init({
     cdnBaseUrl: 'https://your-custom-cdn.com',
   },
 });
+```
+
+### Custom Live Editor Script URL
+
+If you need to load the live editor script from a custom location (e.g., self-hosted or proxied):
+
+```typescript
+i18next.use(ContentstorageBackend).init({
+  backend: {
+    contentKey: 'your-key',
+    customLiveEditorScriptUrl: 'https://your-cdn.com/live-editor.js',
+  },
+});
+
+// Or use it with the post-processor directly
+i18next
+  .use(new ContentstorageLiveEditorPostProcessor({
+    customLiveEditorScriptUrl: 'https://your-cdn.com/live-editor.js',
+    debug: false,
+  }))
+  .init({
+    resources: { /* ... */ },
+  });
 ```
 
 ### Custom Load Path

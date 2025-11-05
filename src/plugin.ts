@@ -94,7 +94,7 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
       initializeMemoryMap();
 
       // Load the live editor script
-      loadLiveEditorScript(2, 3000, this.options.debug).then((loaded) => {
+      loadLiveEditorScript(2, 3000, this.options.debug, this.options.customLiveEditorScriptUrl).then((loaded) => {
         if (loaded) {
           if (this.options.debug) {
             console.log('[ContentStorage] Live editor ready');
