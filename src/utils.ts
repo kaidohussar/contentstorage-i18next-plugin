@@ -211,6 +211,70 @@ export function removeInterpolation(value: string): string {
 }
 
 /**
+ * i18next internal option keys that should not be treated as user variables
+ * Note: 'count' and 'context' are included as they are often used in interpolation
+ */
+const I18NEXT_INTERNAL_KEYS = new Set([
+  'defaultValue',
+  'replace',
+  'lng',
+  'lngs',
+  'fallbackLng',
+  'ns',
+  'keySeparator',
+  'nsSeparator',
+  'returnObjects',
+  'returnDetails',
+  'returnedObjectHandler',
+  'joinArrays',
+  'postProcess',
+  'interpolation',
+  'skipInterpolation',
+  'appendNamespaceToMissingKey',
+  'missingKeyHandler',
+  'parseMissingKeyHandler',
+  'overloadTranslationOptionHandler',
+  'saveMissing',
+  'saveMissingTo',
+  'missingKeyNoValueFallbackToKey',
+  'missingInterpolationHandler',
+  'formatSeparator',
+  'ignoreJSONStructure',
+]);
+
+/**
+ * Extracts user-provided variables from i18next options
+ * Filters out i18next internal options to return only interpolation variables
+ *
+ * @param options - i18next options object
+ * @returns Object containing only user variables, or undefined if none
+ */
+export function extractUserVariables(options?: any): Record<string, any> | undefined {
+  if (!options || typeof options !== 'object') {
+    return undefined;
+  }
+
+  const variables: Record<string, any> = {};
+  let hasVariables = false;
+
+  for (const key in options) {
+    if (!Object.prototype.hasOwnProperty.call(options, key)) continue;
+
+    // Skip i18next internal keys
+    if (I18NEXT_INTERNAL_KEYS.has(key)) continue;
+
+    // Skip keys starting with underscore (private i18next properties)
+    if (key.startsWith('_')) continue;
+
+    // This is a user variable
+    variables[key] = options[key];
+    hasVariables = true;
+  }
+
+  return hasVariables ? variables : undefined;
+}
+
+/**
  * Tracks a translation in the memory map
  *
  * @param translationValue - The actual translated text
@@ -218,13 +282,15 @@ export function removeInterpolation(value: string): string {
  * @param namespace - Optional namespace
  * @param language - Optional language code
  * @param debug - Enable debug logging
+ * @param variables - Optional interpolation variables used in the translation
  */
 export function trackTranslation(
   translationValue: string,
   translationKey: string,
   namespace?: string,
   language?: string,
-  debug: boolean = false
+  debug: boolean = false,
+  variables?: Record<string, any>
 ): void {
   const memoryMap = getMemoryMap();
   if (!memoryMap) return;
@@ -240,6 +306,7 @@ export function trackTranslation(
   const entry: MemoryMapEntry = {
     ids: idSet,
     type: 'text',
+    ...(variables && Object.keys(variables).length > 0 && { variables }),
     metadata: {
       namespace,
       language,
@@ -255,6 +322,7 @@ export function trackTranslation(
       key: normalizedKey,
       namespace,
       language,
+      variables,
     });
   }
 }

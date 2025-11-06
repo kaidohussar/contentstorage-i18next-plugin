@@ -7,6 +7,7 @@ import {
   trackTranslation,
   initializeMemoryMap,
   getMemoryMap,
+  extractUserVariables,
 } from '../utils';
 
 describe('Utils', () => {
@@ -180,6 +181,137 @@ describe('Utils', () => {
       expect(entry?.ids.size).toBe(2);
       expect(entry?.ids.has('common.welcome')).toBe(true);
       expect(entry?.ids.has('homepage.title')).toBe(true);
+    });
+
+    it('should track translation with variables', () => {
+      initializeMemoryMap();
+      const variables = { userName: 'John Doe' };
+      trackTranslation('John Doe registered', 'user.registered', 'users', 'en', false, variables);
+
+      const map = getMemoryMap();
+      const entry = map?.get('John Doe registered');
+
+      expect(entry?.ids.has('user.registered')).toBe(true);
+      expect(entry?.variables).toEqual({ userName: 'John Doe' });
+      expect(entry?.type).toBe('text');
+    });
+
+    it('should not include variables field when no variables provided', () => {
+      initializeMemoryMap();
+      trackTranslation('Welcome', 'common.welcome', 'common', 'en', false);
+
+      const map = getMemoryMap();
+      const entry = map?.get('Welcome');
+
+      expect(entry?.variables).toBeUndefined();
+    });
+
+    it('should not include variables field when empty object provided', () => {
+      initializeMemoryMap();
+      trackTranslation('Welcome', 'common.welcome', 'common', 'en', false, {});
+
+      const map = getMemoryMap();
+      const entry = map?.get('Welcome');
+
+      expect(entry?.variables).toBeUndefined();
+    });
+  });
+
+  describe('extractUserVariables', () => {
+    it('should extract user variables from options', () => {
+      const options = {
+        userName: 'John Doe',
+        age: 30,
+        active: true,
+        lng: 'en',
+        ns: 'common',
+      };
+
+      const variables = extractUserVariables(options);
+      expect(variables).toEqual({
+        userName: 'John Doe',
+        age: 30,
+        active: true,
+      });
+    });
+
+    it('should include count and context as user variables', () => {
+      const options = {
+        count: 5,
+        context: 'male',
+        lng: 'en',
+      };
+
+      const variables = extractUserVariables(options);
+      expect(variables).toEqual({
+        count: 5,
+        context: 'male',
+      });
+    });
+
+    it('should filter out i18next internal keys', () => {
+      const options = {
+        userName: 'Jane',
+        defaultValue: 'Default',
+        lng: 'en',
+        ns: 'common',
+        returnObjects: true,
+        postProcess: ['uppercase'],
+        interpolation: { escapeValue: false },
+      };
+
+      const variables = extractUserVariables(options);
+      expect(variables).toEqual({
+        userName: 'Jane',
+      });
+    });
+
+    it('should filter out keys starting with underscore', () => {
+      const options = {
+        userName: 'Bob',
+        _internal: 'value',
+        __private: 'secret',
+      };
+
+      const variables = extractUserVariables(options);
+      expect(variables).toEqual({
+        userName: 'Bob',
+      });
+    });
+
+    it('should return undefined when no user variables present', () => {
+      const options = {
+        lng: 'en',
+        ns: 'common',
+        defaultValue: 'Default',
+      };
+
+      const variables = extractUserVariables(options);
+      expect(variables).toBeUndefined();
+    });
+
+    it('should return undefined when options is null or undefined', () => {
+      expect(extractUserVariables(null)).toBeUndefined();
+      expect(extractUserVariables(undefined)).toBeUndefined();
+    });
+
+    it('should return undefined when options is not an object', () => {
+      expect(extractUserVariables('string' as any)).toBeUndefined();
+      expect(extractUserVariables(123 as any)).toBeUndefined();
+    });
+
+    it('should handle complex nested variable values', () => {
+      const options = {
+        user: { name: 'Alice', id: 123 },
+        items: ['a', 'b', 'c'],
+        lng: 'en',
+      };
+
+      const variables = extractUserVariables(options);
+      expect(variables).toEqual({
+        user: { name: 'Alice', id: 123 },
+        items: ['a', 'b', 'c'],
+      });
     });
   });
 });

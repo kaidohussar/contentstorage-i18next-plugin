@@ -1,6 +1,6 @@
 import type { PostProcessorModule } from 'i18next';
 import type { ContentstoragePluginOptions } from './types';
-import { trackTranslation, detectLiveEditorMode, initializeMemoryMap, loadLiveEditorScript } from './utils';
+import { trackTranslation, detectLiveEditorMode, initializeMemoryMap, loadLiveEditorScript, extractUserVariables } from './utils';
 
 /**
  * Contentstorage Live Editor Post-Processor
@@ -87,13 +87,17 @@ export class ContentstorageLiveEditorPostProcessor implements PostProcessorModul
     // Extract language
     const language = options?.lng || translator?.language;
 
+    // Extract user variables from options
+    const variables = extractUserVariables(options);
+
     // Track the translation
     trackTranslation(
       value,
       translationKey,
       namespace,
       language,
-      this.options.debug
+      this.options.debug,
+      variables
     );
 
     return value;

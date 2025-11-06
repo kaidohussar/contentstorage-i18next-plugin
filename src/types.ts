@@ -6,6 +6,8 @@ export interface MemoryMapEntry {
   ids: Set<string>;
   /** Type of content - always 'text' for translations */
   type: 'text';
+  /** Variables used in translation interpolation */
+  variables?: Record<string, any>;
   /** Optional metadata for debugging */
   metadata?: {
     /** Namespace where this translation was found */
