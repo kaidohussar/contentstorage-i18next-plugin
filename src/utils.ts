@@ -266,6 +266,9 @@ export function extractUserVariables(options?: any): Record<string, any> | undef
     // Skip keys starting with underscore (private i18next properties)
     if (key.startsWith('_')) continue;
 
+    // Skip undefined values
+    if (options[key] === undefined) continue;
+
     // This is a user variable
     variables[key] = options[key];
     hasVariables = true;

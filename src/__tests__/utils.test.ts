@@ -313,5 +313,32 @@ describe('Utils', () => {
         items: ['a', 'b', 'c'],
       });
     });
+
+    it('should filter out undefined values', () => {
+      const options = {
+        userName: 'Sarah Johnson',
+        amount: undefined,
+        company: undefined,
+        count: undefined,
+        context: undefined,
+        lng: 'en',
+      };
+
+      const variables = extractUserVariables(options);
+      expect(variables).toEqual({
+        userName: 'Sarah Johnson',
+      });
+    });
+
+    it('should return undefined when all user variables are undefined', () => {
+      const options = {
+        amount: undefined,
+        company: undefined,
+        lng: 'en',
+      };
+
+      const variables = extractUserVariables(options);
+      expect(variables).toBeUndefined();
+    });
   });
 });
