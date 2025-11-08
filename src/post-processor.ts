@@ -90,9 +90,30 @@ export class ContentstorageLiveEditorPostProcessor implements PostProcessorModul
     // Extract user variables from options
     const variables = extractUserVariables(options);
 
-    // Track the translation
+    // Try to get the template (non-interpolated value) from the translator
+    // This allows us to track the template with {{placeholders}} instead of resolved values
+    let template = value;
+    try {
+      if (translator?.resourceStore) {
+        const ns = namespace || options?.ns || translator.options?.defaultNS || 'translation';
+        const lng = language || translator.language;
+
+        // Try to get the raw translation template from the resource store
+        const rawTranslation = translator.resourceStore.getResource(lng, ns, translationKey);
+        if (rawTranslation && typeof rawTranslation === 'string') {
+          template = rawTranslation;
+        }
+      }
+    } catch (e) {
+      // If we can't get the template, fall back to using the resolved value
+      if (this.options.debug) {
+        console.warn('[ContentStorage] Could not retrieve template for:', translationKey, e);
+      }
+    }
+
+    // Track the translation with the template
     trackTranslation(
-      value,
+      template,
       translationKey,
       namespace,
       language,
