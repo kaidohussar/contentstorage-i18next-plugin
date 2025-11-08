@@ -306,10 +306,16 @@ export function trackTranslation(
   const idSet = existingEntry ? existingEntry.ids : new Set<string>();
   idSet.add(normalizedKey);
 
+  // Merge variables: prefer new variables if provided, otherwise keep existing
+  // This ensures variables are preserved when backend tracks without them
+  const mergedVariables = variables && Object.keys(variables).length > 0
+    ? variables
+    : existingEntry?.variables;
+
   const entry: MemoryMapEntry = {
     ids: idSet,
     type: 'text',
-    ...(variables && Object.keys(variables).length > 0 && { variables }),
+    ...(mergedVariables && Object.keys(mergedVariables).length > 0 && { variables: mergedVariables }),
     metadata: {
       namespace,
       language,

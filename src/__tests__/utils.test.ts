@@ -215,6 +215,59 @@ describe('Utils', () => {
 
       expect(entry?.variables).toBeUndefined();
     });
+
+    it('should preserve variables when tracking same value again without variables', () => {
+      initializeMemoryMap();
+
+      // First track with variables (e.g., from post-processor)
+      const variables = { userName: 'John Doe', count: 3 };
+      trackTranslation('User activity', 'user.activity', undefined, 'en', false, variables);
+
+      // Then track same value without variables (e.g., from backend)
+      trackTranslation('User activity', 'user.activity', undefined, 'en', false);
+
+      const map = getMemoryMap();
+      const entry = map?.get('User activity');
+
+      // Variables should still be present
+      expect(entry?.variables).toEqual({ userName: 'John Doe', count: 3 });
+    });
+
+    it('should update variables when tracking same value with new variables', () => {
+      initializeMemoryMap();
+
+      // First track with initial variables
+      trackTranslation('User activity', 'user.activity', undefined, 'en', false, { userName: 'Alice' });
+
+      // Then track with updated variables
+      trackTranslation('User activity', 'user.activity', undefined, 'en', false, { userName: 'Bob', action: 'login' });
+
+      const map = getMemoryMap();
+      const entry = map?.get('User activity');
+
+      // Variables should be updated to the new ones
+      expect(entry?.variables).toEqual({ userName: 'Bob', action: 'login' });
+    });
+
+    it('should add variables to entry that initially had none', () => {
+      initializeMemoryMap();
+
+      // First track without variables (e.g., from backend during initial load)
+      trackTranslation('User registered', 'user.registered', undefined, 'en', false);
+
+      const map1 = getMemoryMap();
+      const entry1 = map1?.get('User registered');
+      expect(entry1?.variables).toBeUndefined();
+
+      // Then track with variables (e.g., from post-processor when translation is used)
+      trackTranslation('User registered', 'user.registered', undefined, 'en', false, { userName: 'Charlie' });
+
+      const map2 = getMemoryMap();
+      const entry2 = map2?.get('User registered');
+
+      // Variables should now be present
+      expect(entry2?.variables).toEqual({ userName: 'Charlie' });
+    });
   });
 
   describe('extractUserVariables', () => {
