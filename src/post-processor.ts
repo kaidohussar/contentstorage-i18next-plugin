@@ -52,7 +52,7 @@ export class ContentstorageLiveEditorPostProcessor implements PostProcessorModul
 
       // Initialize current language code with browser language or fallback
       // This ensures window.currentLanguageCode is never undefined
-      const browserLanguage = typeof navigator !== 'undefined'
+      const browserLanguage = typeof navigator !== 'undefined' && navigator.language
         ? navigator.language.split('-')[0]
         : 'en';
       setCurrentLanguageCode(browserLanguage);
