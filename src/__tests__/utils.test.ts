@@ -270,6 +270,32 @@ describe('Utils', () => {
     });
   });
 
+  describe('Language Code Tracking', () => {
+    it('should set currentLanguageCode on window', () => {
+      const { setCurrentLanguageCode } = require('../utils');
+
+      setCurrentLanguageCode('en');
+      expect((window as any).currentLanguageCode).toBe('en');
+
+      setCurrentLanguageCode('fr');
+      expect((window as any).currentLanguageCode).toBe('fr');
+    });
+
+    it('should get currentLanguageCode from window', () => {
+      const { setCurrentLanguageCode, getCurrentLanguageCode } = require('../utils');
+
+      setCurrentLanguageCode('es');
+      expect(getCurrentLanguageCode()).toBe('es');
+    });
+
+    it('should return null when currentLanguageCode is not set', () => {
+      const { getCurrentLanguageCode } = require('../utils');
+      delete (window as any).currentLanguageCode;
+
+      expect(getCurrentLanguageCode()).toBeNull();
+    });
+  });
+
   describe('extractUserVariables', () => {
     it('should extract user variables from options', () => {
       const options = {

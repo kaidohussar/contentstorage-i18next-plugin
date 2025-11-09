@@ -16,6 +16,7 @@ import {
   flattenTranslations,
   isBrowser,
   loadLiveEditorScript,
+  setCurrentLanguageCode,
 } from './utils';
 import { ContentstorageLiveEditorPostProcessor } from './post-processor';
 
@@ -54,6 +55,7 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
   private options: ContentstoragePluginOptions;
   private isLiveMode: boolean = false;
   private postProcessor?: ContentstorageLiveEditorPostProcessor;
+  private i18nextInstance?: any;
 
   constructor(_services?: Services, options?: ContentstoragePluginOptions, _i18nextOptions?: InitOptions) {
     this.options = options || {};
@@ -93,6 +95,12 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
       // Initialize memory map
       initializeMemoryMap();
 
+      // Store i18next instance for language change tracking
+      this.i18nextInstance = (services as any).i18next || (services as any).backendConnector?.backend?.options?.i18next;
+
+      // Set up language change tracking
+      this.setupLanguageTracking(services);
+
       // Load the live editor script
       loadLiveEditorScript(2, 3000, this.options.debug, this.options.customLiveEditorScriptUrl).then((loaded) => {
         if (loaded) {
@@ -114,6 +122,59 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
       }
     } else if (this.options.debug) {
       console.log('[ContentStorage] Running in normal mode (not live editor)');
+    }
+  }
+
+  /**
+   * Set up language change tracking
+   * Listens to i18next language changes and updates window.currentLanguageCode
+   */
+  private setupLanguageTracking(services: Services): void {
+    if (!isBrowser()) return;
+
+    // Try to get the i18next instance from services
+    const i18next = this.i18nextInstance || (services as any).backendConnector?.i18next;
+
+    if (i18next) {
+      // Set initial language code
+      const initialLanguage = i18next.language || i18next.options?.lng || 'en';
+      setCurrentLanguageCode(initialLanguage);
+
+      if (this.options.debug) {
+        console.log(`[ContentStorage] Setting initial language code: ${initialLanguage}`);
+      }
+
+      // Listen for language changes
+      i18next.on('languageChanged', (lng: string) => {
+        setCurrentLanguageCode(lng);
+        if (this.options.debug) {
+          console.log(`[ContentStorage] Language changed to: ${lng}`);
+        }
+      });
+
+      if (this.options.debug) {
+        console.log('[ContentStorage] Language change tracking enabled');
+      }
+    } else {
+      // Fallback: try to detect i18next from window
+      if (typeof window !== 'undefined' && (window as any).i18next) {
+        const windowI18next = (window as any).i18next;
+        const initialLanguage = windowI18next.language || 'en';
+        setCurrentLanguageCode(initialLanguage);
+
+        if (this.options.debug) {
+          console.log(`[ContentStorage] Setting initial language code (from window): ${initialLanguage}`);
+        }
+
+        windowI18next.on('languageChanged', (lng: string) => {
+          setCurrentLanguageCode(lng);
+          if (this.options.debug) {
+            console.log(`[ContentStorage] Language changed to: ${lng}`);
+          }
+        });
+      } else if (this.options.debug) {
+        console.warn('[ContentStorage] Could not access i18next instance for language tracking');
+      }
     }
   }
 

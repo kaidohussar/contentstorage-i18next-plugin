@@ -9,7 +9,12 @@ export {
   ContentstorageLiveEditorPostProcessor,
   createContentstorageLiveEditorPostProcessor,
 } from './post-processor';
-export { debugMemoryMap, loadLiveEditorScript } from './utils';
+export {
+  debugMemoryMap,
+  loadLiveEditorScript,
+  setCurrentLanguageCode,
+  getCurrentLanguageCode,
+} from './utils';
 export type {
   ContentstoragePluginOptions,
   MemoryMap,

@@ -138,6 +138,29 @@ export function getMemoryMap(): MemoryMap | null {
 }
 
 /**
+ * Sets the current language code on the window object
+ * This is used by the live editor to know which language is currently active
+ *
+ * @param languageCode - The language code to set (e.g., 'en', 'es', 'fr')
+ */
+export function setCurrentLanguageCode(languageCode: string): void {
+  const win = getContentstorageWindow();
+  if (win) {
+    win.currentLanguageCode = languageCode;
+  }
+}
+
+/**
+ * Gets the current language code from the window object
+ *
+ * @returns The current language code, or null if not set
+ */
+export function getCurrentLanguageCode(): string | null {
+  const win = getContentstorageWindow();
+  return win?.currentLanguageCode || null;
+}
+
+/**
  * Normalizes i18next key format to consistent dot notation
  * Converts namespace:key format to namespace.key
  * Only adds namespace prefix if explicitly present in the key (colon notation)
