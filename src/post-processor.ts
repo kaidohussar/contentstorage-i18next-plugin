@@ -91,7 +91,10 @@ export class ContentstorageLiveEditorPostProcessor implements PostProcessorModul
     if (translationKey.includes(':')) {
       [namespace] = translationKey.split(':');
     }
-
+    console.log('[Contentstorage plugin] ', {
+      options,
+      translator
+    })
     // Extract language
     const language = options?.lng || translator?.language;
 
@@ -120,7 +123,7 @@ export class ContentstorageLiveEditorPostProcessor implements PostProcessorModul
     } catch (e) {
       // If we can't get the template, fall back to using the resolved value
       if (this.options.debug) {
-        console.warn('[ContentStorage] Could not retrieve template for:', translationKey, e);
+        console.warn('[Contentstorage plugin] Could not retrieve template for:', translationKey, e);
       }
     }
 
