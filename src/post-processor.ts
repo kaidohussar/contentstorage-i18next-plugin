@@ -1,6 +1,6 @@
 import type { PostProcessorModule } from 'i18next';
 import type { ContentstoragePluginOptions } from './types';
-import { trackTranslation, detectLiveEditorMode, initializeMemoryMap, loadLiveEditorScript, extractUserVariables } from './utils';
+import { trackTranslation, detectLiveEditorMode, initializeMemoryMap, loadLiveEditorScript, extractUserVariables, setCurrentLanguageCode } from './utils';
 
 /**
  * Contentstorage Live Editor Post-Processor
@@ -50,11 +50,19 @@ export class ContentstorageLiveEditorPostProcessor implements PostProcessorModul
     if (this.isLiveMode) {
       initializeMemoryMap();
 
+      // Initialize current language code with browser language or fallback
+      // This ensures window.currentLanguageCode is never undefined
+      const browserLanguage = typeof navigator !== 'undefined'
+        ? navigator.language.split('-')[0]
+        : 'en';
+      setCurrentLanguageCode(browserLanguage);
+
       // Load the live editor script
       loadLiveEditorScript(2, 3000, this.options.debug, this.options.customLiveEditorScriptUrl);
 
       if (this.options.debug) {
         console.log('[ContentStorage] Post-processor initialized in live mode');
+        console.log(`[ContentStorage] Initial language code set to: ${browserLanguage}`);
       }
     }
   }
@@ -86,6 +94,11 @@ export class ContentstorageLiveEditorPostProcessor implements PostProcessorModul
 
     // Extract language
     const language = options?.lng || translator?.language;
+
+    // Set current language code for live editor
+    if (language) {
+      setCurrentLanguageCode(language);
+    }
 
     // Extract user variables from options
     const variables = extractUserVariables(options);
