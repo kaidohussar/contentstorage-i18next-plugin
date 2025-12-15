@@ -300,6 +300,9 @@ export function extractUserVariables(options?: any): Record<string, any> | undef
   return hasVariables ? variables : undefined;
 }
 
+// Schedule clear for next frame (memory map cleanup)
+let clearScheduled = false;
+
 /**
  * Tracks a translation in the memory map
  *
@@ -320,6 +323,20 @@ export function trackTranslation(
 ): void {
   const memoryMap = getMemoryMap();
   if (!memoryMap) return;
+
+  // Schedule clear for next frame (only once per frame)
+  // This ensures only currently rendered translations remain in the map
+  if (!clearScheduled && isBrowser()) {
+    clearScheduled = true;
+    requestAnimationFrame(() => {
+      memoryMap.clear();
+      clearScheduled = false;
+
+      if (debug) {
+        console.log('[ContentStorage] Memory map cleared for new frame');
+      }
+    });
+  }
 
   // Normalize the key
   const normalizedKey = normalizeKey(translationKey, namespace);
