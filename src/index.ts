@@ -15,6 +15,13 @@ export {
   setCurrentLanguageCode,
   getCurrentLanguageCode,
 } from './utils';
+export {
+  detectScreenshotMode,
+  decodeContentstorageKey,
+  cleanScreenshotUrlParams,
+  exposeApiKey,
+  getApiKey,
+} from './screenshot';
 export type {
   ContentstoragePluginOptions,
   MemoryMap,

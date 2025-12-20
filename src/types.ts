@@ -32,6 +32,8 @@ export interface ContentstorageWindow extends Window {
   memoryMap?: MemoryMap;
   __contentStorageDebug?: boolean;
   currentLanguageCode?: string;
+  /** API key exposed for live-editor.js to use for screenshot uploads */
+  __contentstorageApiKey?: string;
 }
 
 /**
@@ -108,10 +110,3 @@ export type TranslationData = {
   [key: string]: string | TranslationData;
 };
 
-/**
- * Callback for i18next backend read method
- */
-export type ReadCallback = (
-  error: Error | null,
-  data: TranslationData | boolean | null | undefined
-) => void;

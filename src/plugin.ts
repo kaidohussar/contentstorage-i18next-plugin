@@ -17,6 +17,11 @@ import {
   isBrowser,
   loadLiveEditorScript,
 } from './utils';
+import {
+  detectScreenshotMode,
+  cleanScreenshotUrlParams,
+  exposeApiKey,
+} from './screenshot';
 import { ContentstorageLiveEditorPostProcessor } from './post-processor';
 
 /**
@@ -114,6 +119,33 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
       }
     } else if (this.options.debug) {
       console.log('[ContentStorage] Running in normal mode (not live editor)');
+    }
+
+    // Check for screenshot mode (works in local dev without iframe)
+    this.initializeScreenshotMode();
+  }
+
+  /**
+   * Initialize screenshot mode if URL params indicate it
+   * Exposes the API key for live-editor.js to use
+   */
+  private initializeScreenshotMode(): void {
+    const screenshotConfig = detectScreenshotMode();
+
+    if (!screenshotConfig) return;
+
+    if (this.options.debug) {
+      console.log('[ContentStorage] Screenshot mode detected');
+    }
+
+    // Expose API key for live-editor.js to use
+    exposeApiKey(screenshotConfig.contentstorageKey);
+
+    // Clean URL params for security
+    cleanScreenshotUrlParams();
+
+    if (this.options.debug) {
+      console.log('[ContentStorage] API key exposed, URL params cleaned');
     }
   }
 
