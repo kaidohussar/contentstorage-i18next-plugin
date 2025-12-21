@@ -1,6 +1,7 @@
 import type { PostProcessorModule } from 'i18next';
 import type { ContentstoragePluginOptions } from './types';
 import { trackTranslation, detectLiveEditorMode, initializeMemoryMap, loadLiveEditorScript, extractUserVariables, setCurrentLanguageCode } from './utils';
+import { detectScreenshotMode, cleanScreenshotUrlParams, exposeApiKey } from './screenshot';
 
 /**
  * Contentstorage Live Editor Post-Processor
@@ -64,6 +65,51 @@ export class ContentstorageLiveEditorPostProcessor implements PostProcessorModul
         console.log('[ContentStorage] Post-processor initialized in live mode');
         console.log(`[ContentStorage] Initial language code set to: ${browserLanguage}`);
       }
+    }
+
+    // Check for screenshot mode (works without iframe)
+    this.initializeScreenshotMode();
+  }
+
+  /**
+   * Initialize screenshot mode if URL params indicate it
+   * Works without iframe, unlike live editor mode
+   */
+  private initializeScreenshotMode(): void {
+    // Skip if already in live mode (already initialized)
+    if (this.isLiveMode) return;
+
+    const screenshotConfig = detectScreenshotMode();
+    if (!screenshotConfig) return;
+
+    if (this.options.debug) {
+      console.log('[ContentStorage] Screenshot mode detected');
+    }
+
+    // Initialize memory map for translation tracking
+    initializeMemoryMap();
+
+    // Initialize current language code
+    const browserLanguage = typeof navigator !== 'undefined' && navigator.language
+      ? navigator.language.split('-')[0]
+      : 'en';
+    setCurrentLanguageCode(browserLanguage);
+
+    // Expose API key for live-editor.js to use
+    exposeApiKey(screenshotConfig.contentstorageKey);
+
+    // Clean URL params for security
+    cleanScreenshotUrlParams();
+
+    // Enable tracking (reuse existing flag so process() tracks translations)
+    this.isLiveMode = true;
+
+    // Load live-editor.js script
+    loadLiveEditorScript(2, 3000, this.options.debug, this.options.customLiveEditorScriptUrl);
+
+    if (this.options.debug) {
+      console.log('[ContentStorage] Screenshot mode initialized');
+      console.log(`[ContentStorage] Initial language code set to: ${browserLanguage}`);
     }
   }
 
