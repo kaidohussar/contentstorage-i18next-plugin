@@ -144,6 +144,9 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
     // Clean URL params for security
     cleanScreenshotUrlParams();
 
+    // Load live-editor.js script (handles screenshot UI)
+    loadLiveEditorScript(2, 3000, this.options.debug, this.options.customLiveEditorScriptUrl);
+
     if (this.options.debug) {
       console.log('[ContentStorage] API key exposed, URL params cleaned');
     }
