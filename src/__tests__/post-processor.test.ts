@@ -1,5 +1,5 @@
 import { ContentstorageLiveEditorPostProcessor } from '../post-processor';
-import { getMemoryMap, getCurrentLanguageCode } from '../utils';
+import { getMemoryMap, getCurrentLanguageCode, initializeMemoryMap } from '../utils';
 
 describe('ContentstorageLiveEditorPostProcessor', () => {
   let postProcessor: ContentstorageLiveEditorPostProcessor;
@@ -224,6 +224,84 @@ describe('ContentstorageLiveEditorPostProcessor', () => {
       // Key should be normalized to dot notation
       expect(entry?.ids.has('users.registered')).toBe(true);
       expect(entry?.variables).toEqual({ userName: 'Alice' });
+    });
+  });
+
+  describe('Refresh Function', () => {
+    beforeEach(() => {
+      // Clean up
+      const win = window as any;
+      delete win.memoryMap;
+      delete win.currentLanguageCode;
+      delete win.__contentstorageRefresh;
+    });
+
+    it('should expose __contentstorageRefresh on window in live mode', () => {
+      const processor = new ContentstorageLiveEditorPostProcessor({ forceLiveMode: true });
+
+      // Process a translation to trigger i18next capture and expose refresh function
+      const mockTranslator = { emit: jest.fn(), language: 'en' };
+      processor.process('Hello', 'greeting', { lng: 'en' }, mockTranslator);
+
+      // Assert
+      expect((window as any).__contentstorageRefresh).toBeDefined();
+      expect(typeof (window as any).__contentstorageRefresh).toBe('function');
+    });
+
+    it('should clear memoryMap when refresh is called', () => {
+      const mockTranslator = { emit: jest.fn(), language: 'en' };
+      const processor = new ContentstorageLiveEditorPostProcessor({ forceLiveMode: true });
+
+      // Process translations to populate memoryMap
+      processor.process('Hello', 'greeting', { lng: 'en' }, mockTranslator);
+      processor.process('World', 'world', { lng: 'en' }, mockTranslator);
+
+      expect(getMemoryMap()?.size).toBe(2);
+
+      // Call refresh
+      (window as any).__contentstorageRefresh();
+
+      // Assert memoryMap is cleared
+      expect(getMemoryMap()?.size).toBe(0);
+    });
+
+    it('should emit languageChanged event when refresh is called', () => {
+      const mockTranslator = { emit: jest.fn(), language: 'en' };
+      const processor = new ContentstorageLiveEditorPostProcessor({ forceLiveMode: true });
+
+      // Process a translation to capture i18next reference
+      processor.process('Hello', 'greeting', { lng: 'en' }, mockTranslator);
+
+      // Call refresh
+      (window as any).__contentstorageRefresh();
+
+      // Assert languageChanged was emitted
+      expect(mockTranslator.emit).toHaveBeenCalledWith('languageChanged', 'en');
+    });
+
+    it('should not expose refresh function in normal mode', () => {
+      const processor = new ContentstorageLiveEditorPostProcessor({ forceLiveMode: false });
+      processor.process('Hello', 'greeting', { lng: 'en' }, {});
+
+      expect((window as any).__contentstorageRefresh).toBeUndefined();
+    });
+
+    it('should allow re-populating memoryMap after refresh', () => {
+      const mockTranslator = { emit: jest.fn(), language: 'en' };
+      const processor = new ContentstorageLiveEditorPostProcessor({ forceLiveMode: true });
+
+      // Process translation
+      processor.process('Hello', 'greeting', { lng: 'en' }, mockTranslator);
+      expect(getMemoryMap()?.size).toBe(1);
+
+      // Refresh
+      (window as any).__contentstorageRefresh();
+      expect(getMemoryMap()?.size).toBe(0);
+
+      // Re-populate
+      processor.process('Goodbye', 'farewell', { lng: 'en' }, mockTranslator);
+      expect(getMemoryMap()?.size).toBe(1);
+      expect(getMemoryMap()?.has('Goodbye')).toBe(true);
     });
   });
 });

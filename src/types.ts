@@ -34,6 +34,8 @@ export interface ContentstorageWindow extends Window {
   currentLanguageCode?: string;
   /** API key exposed for live-editor.js to use for screenshot uploads */
   __contentstorageApiKey?: string;
+  /** Refresh function to clear memoryMap and trigger re-render */
+  __contentstorageRefresh?: () => void;
 }
 
 /**

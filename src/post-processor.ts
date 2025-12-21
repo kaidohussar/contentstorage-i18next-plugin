@@ -1,6 +1,6 @@
 import type { PostProcessorModule } from 'i18next';
 import type { ContentstoragePluginOptions } from './types';
-import { trackTranslation, detectLiveEditorMode, initializeMemoryMap, loadLiveEditorScript, extractUserVariables, setCurrentLanguageCode } from './utils';
+import { trackTranslation, detectLiveEditorMode, initializeMemoryMap, loadLiveEditorScript, extractUserVariables, setCurrentLanguageCode, clearMemoryMap, getContentstorageWindow } from './utils';
 import { detectScreenshotMode, cleanScreenshotUrlParams, exposeApiKey } from './screenshot';
 
 /**
@@ -33,6 +33,7 @@ export class ContentstorageLiveEditorPostProcessor implements PostProcessorModul
 
   private options: ContentstoragePluginOptions;
   private isLiveMode: boolean = false;
+  private i18nextInstance: any = null;
 
   constructor(options: ContentstoragePluginOptions = {}) {
     this.options = {
@@ -114,6 +115,36 @@ export class ContentstorageLiveEditorPostProcessor implements PostProcessorModul
   }
 
   /**
+   * Expose refresh function on window for live-editor.js to call
+   * Only exposed in live mode (live editor or screenshot mode)
+   */
+  private exposeRefreshFunction(): void {
+    if (!this.isLiveMode) return;
+
+    const win = getContentstorageWindow();
+    if (!win) return;
+
+    win.__contentstorageRefresh = () => {
+      // Clear memoryMap
+      clearMemoryMap();
+
+      // Trigger re-render by emitting languageChanged event
+      // This causes useTranslation hooks to re-render
+      if (this.i18nextInstance?.emit) {
+        this.i18nextInstance.emit('languageChanged', this.i18nextInstance.language);
+      }
+
+      if (this.options.debug) {
+        console.log('[Contentstorage] Refresh triggered: memoryMap cleared, languageChanged emitted');
+      }
+    };
+
+    if (this.options.debug) {
+      console.log('[Contentstorage] Refresh function exposed on window.__contentstorageRefresh');
+    }
+  }
+
+  /**
    * Process the translated value
    * Called by i18next after translation resolution
    */
@@ -126,6 +157,12 @@ export class ContentstorageLiveEditorPostProcessor implements PostProcessorModul
     // Only track in live mode
     if (!this.isLiveMode) {
       return value;
+    }
+
+    // Store i18next reference on first call and expose refresh function
+    if (!this.i18nextInstance && translator) {
+      this.i18nextInstance = translator;
+      this.exposeRefreshFunction();
     }
 
     // Handle array of keys (fallback keys)

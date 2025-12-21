@@ -7,6 +7,7 @@ import {
   trackTranslation,
   initializeMemoryMap,
   getMemoryMap,
+  clearMemoryMap,
   extractUserVariables,
 } from '../utils';
 
@@ -267,6 +268,49 @@ describe('Utils', () => {
 
       // Variables should now be present
       expect(entry2?.variables).toEqual({ userName: 'Charlie' });
+    });
+  });
+
+  describe('clearMemoryMap', () => {
+    beforeEach(() => {
+      // Clean up memory map
+      delete (window as any).memoryMap;
+    });
+
+    it('should clear all entries from memory map', () => {
+      // Setup: initialize and add entries
+      initializeMemoryMap();
+      trackTranslation('Hello', 'greeting', undefined, 'en', false);
+      trackTranslation('World', 'world', undefined, 'en', false);
+
+      const memoryMap = getMemoryMap();
+      expect(memoryMap?.size).toBe(2);
+
+      // Act
+      clearMemoryMap();
+
+      // Assert
+      expect(memoryMap?.size).toBe(0);
+    });
+
+    it('should not throw if memory map is not initialized', () => {
+      // Ensure no memoryMap
+      delete (window as any).memoryMap;
+
+      expect(() => clearMemoryMap()).not.toThrow();
+    });
+
+    it('should allow re-populating after clear', () => {
+      initializeMemoryMap();
+      trackTranslation('Hello', 'greeting', undefined, 'en', false);
+
+      clearMemoryMap();
+      expect(getMemoryMap()?.size).toBe(0);
+
+      // Re-populate
+      trackTranslation('Goodbye', 'farewell', undefined, 'en', false);
+      expect(getMemoryMap()?.size).toBe(1);
+      expect(getMemoryMap()?.has('Goodbye')).toBe(true);
     });
   });
 
