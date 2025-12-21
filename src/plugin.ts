@@ -59,6 +59,8 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
   private options: ContentstoragePluginOptions;
   private isLiveMode: boolean = false;
   private postProcessor?: ContentstorageLiveEditorPostProcessor;
+  private services?: Services;
+  private i18nextOptions?: InitOptions;
 
   constructor(_services?: Services, options?: ContentstoragePluginOptions, _i18nextOptions?: InitOptions) {
     this.options = options || {};
@@ -79,6 +81,9 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
     backendOptions: ContentstoragePluginOptions = {},
     i18nextOptions: InitOptions = {}
   ): void {
+    // Store for use in initializeScreenshotMode
+    this.services = services;
+    this.i18nextOptions = i18nextOptions;
 
     this.options = {
       debug: false,
@@ -138,17 +143,25 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
       console.log('[ContentStorage] Screenshot mode detected');
     }
 
+    // Initialize memory map for translation tracking
+    initializeMemoryMap();
+
     // Expose API key for live-editor.js to use
     exposeApiKey(screenshotConfig.contentstorageKey);
 
     // Clean URL params for security
     cleanScreenshotUrlParams();
 
+    // Register post-processor for translation tracking
+    if (this.services && this.i18nextOptions) {
+      this.registerPostProcessor(this.services, this.i18nextOptions);
+    }
+
     // Load live-editor.js script (handles screenshot UI)
     loadLiveEditorScript(2, 3000, this.options.debug, this.options.customLiveEditorScriptUrl);
 
     if (this.options.debug) {
-      console.log('[ContentStorage] API key exposed, URL params cleaned');
+      console.log('[ContentStorage] Screenshot mode initialized: memory map, post-processor, API key exposed');
     }
   }
 
