@@ -62,8 +62,8 @@ export class ContentstorageLiveEditorPostProcessor implements PostProcessorModul
       loadLiveEditorScript(2, 3000, this.options.debug, this.options.customLiveEditorScriptUrl);
 
       if (this.options.debug) {
-        console.log('[ContentStorage] Post-processor initialized in live mode');
-        console.log(`[ContentStorage] Initial language code set to: ${browserLanguage}`);
+        console.log('[Contentstorage] Post-processor initialized in live mode');
+        console.log(`[Contentstorage] Initial language code set to: ${browserLanguage}`);
       }
     }
 
@@ -83,7 +83,7 @@ export class ContentstorageLiveEditorPostProcessor implements PostProcessorModul
     if (!screenshotConfig) return;
 
     if (this.options.debug) {
-      console.log('[ContentStorage] Screenshot mode detected');
+      console.log('[Contentstorage] Screenshot mode detected');
     }
 
     // Initialize memory map for translation tracking
@@ -108,8 +108,8 @@ export class ContentstorageLiveEditorPostProcessor implements PostProcessorModul
     loadLiveEditorScript(2, 3000, this.options.debug, this.options.customLiveEditorScriptUrl);
 
     if (this.options.debug) {
-      console.log('[ContentStorage] Screenshot mode initialized');
-      console.log(`[ContentStorage] Initial language code set to: ${browserLanguage}`);
+      console.log('[Contentstorage] Screenshot mode initialized');
+      console.log(`[Contentstorage] Initial language code set to: ${browserLanguage}`);
     }
   }
 

@@ -80,7 +80,7 @@ export function cleanScreenshotUrlParams(): void {
     // Use replaceState to update URL without reload
     win.history.replaceState({}, '', url.toString());
   } catch (e) {
-    console.warn('[ContentStorage] Failed to clean URL params:', e);
+    console.warn('[Contentstorage] Failed to clean URL params:', e);
   }
 }
 

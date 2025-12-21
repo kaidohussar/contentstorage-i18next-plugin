@@ -270,9 +270,9 @@ i18next.use(ContentstorageBackend).init({
 
 Console output:
 ```
-[ContentStorage] Live editor mode enabled
-[ContentStorage] Post-processor auto-registered
-[ContentStorage] Plugin initialized with options: { ... }
+[Contentstorage] Live editor mode enabled
+[Contentstorage] Post-processor auto-registered
+[Contentstorage] Plugin initialized with options: { ... }
 ```
 
 ---

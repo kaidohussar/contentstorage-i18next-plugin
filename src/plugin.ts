@@ -107,10 +107,10 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
       loadLiveEditorScript(2, 3000, this.options.debug, this.options.customLiveEditorScriptUrl).then((loaded) => {
         if (loaded) {
           if (this.options.debug) {
-            console.log('[ContentStorage] Live editor ready');
+            console.log('[Contentstorage] Live editor ready');
           }
         } else {
-          console.warn('[ContentStorage] Failed to load live editor script');
+          console.warn('[Contentstorage] Failed to load live editor script');
         }
       });
 
@@ -118,12 +118,12 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
       this.registerPostProcessor(services, i18nextOptions);
 
       if (this.options.debug) {
-        console.log('[ContentStorage] Live editor mode enabled');
-        console.log('[ContentStorage] Post-processor auto-registered');
-        console.log('[ContentStorage] Plugin initialized with options:', this.options);
+        console.log('[Contentstorage] Live editor mode enabled');
+        console.log('[Contentstorage] Post-processor auto-registered');
+        console.log('[Contentstorage] Plugin initialized with options:', this.options);
       }
     } else if (this.options.debug) {
-      console.log('[ContentStorage] Running in normal mode (not live editor)');
+      console.log('[Contentstorage] Running in normal mode (not live editor)');
     }
 
     // Check for screenshot mode (works in local dev without iframe)
@@ -140,7 +140,7 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
     if (!screenshotConfig) return;
 
     if (this.options.debug) {
-      console.log('[ContentStorage] Screenshot mode detected');
+      console.log('[Contentstorage] Screenshot mode detected');
     }
 
     // Initialize memory map for translation tracking
@@ -161,7 +161,7 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
     loadLiveEditorScript(2, 3000, this.options.debug, this.options.customLiveEditorScriptUrl);
 
     if (this.options.debug) {
-      console.log('[ContentStorage] Screenshot mode initialized: memory map, post-processor, API key exposed');
+      console.log('[Contentstorage] Screenshot mode initialized: memory map, post-processor, API key exposed');
     }
   }
 
@@ -203,7 +203,7 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
     callback: ReadCallback
   ): void {
     if (this.options.debug) {
-      console.log(`[ContentStorage] Loading translations: ${language}/${namespace}`);
+      console.log(`[Contentstorage] Loading translations: ${language}/${namespace}`);
     }
 
     this.loadTranslations(language, namespace)
@@ -222,7 +222,7 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
       })
       .catch((error) => {
         if (this.options.debug) {
-          console.error('[ContentStorage] Failed to load translations:', error);
+          console.error('[Contentstorage] Failed to load translations:', error);
         }
         callback(error, false);
       });
@@ -238,7 +238,7 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
     const url = this.getLoadPath(language, namespace);
 
     if (this.options.debug) {
-      console.log(`[ContentStorage] Fetching from: ${url}`);
+      console.log(`[Contentstorage] Fetching from: ${url}`);
     }
 
     try {
@@ -251,7 +251,7 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
       });
     } catch (error) {
       if (this.options.debug) {
-        console.error('[ContentStorage] Fetch error:', error);
+        console.error('[Contentstorage] Fetch error:', error);
       }
       throw error;
     }
@@ -293,7 +293,7 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
     // Default CDN path
     if (!contentKey) {
       throw new Error(
-        '[ContentStorage] contentKey is required when using default CDN path'
+        '[Contentstorage] contentKey is required when using default CDN path'
       );
     }
 
@@ -347,7 +347,7 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
 
     if (this.options.debug) {
       console.log(
-        `[ContentStorage] Tracked ${flatTranslations.length} translations for ${namespace}`
+        `[Contentstorage] Tracked ${flatTranslations.length} translations for ${namespace}`
       );
     }
   }

@@ -90,7 +90,7 @@ export function loadLiveEditorScript(
 
     const loadScript = (attempt: number = 1) => {
       if (debug) {
-        console.log(`[ContentStorage] Attempting to load live editor script (attempt ${attempt}/${retries})`);
+        console.log(`[Contentstorage] Attempting to load live editor script (attempt ${attempt}/${retries})`);
       }
 
       const scriptElement = win.document.createElement('script');
@@ -99,7 +99,7 @@ export function loadLiveEditorScript(
 
       scriptElement.onload = () => {
         if (debug) {
-          console.log(`[ContentStorage] Live editor script loaded successfully`);
+          console.log(`[Contentstorage] Live editor script loaded successfully`);
         }
         resolve(true);
       };
@@ -109,13 +109,13 @@ export function loadLiveEditorScript(
         scriptElement.remove();
 
         if (debug) {
-          console.error(`[ContentStorage] Failed to load live editor script (attempt ${attempt}/${retries})`, error);
+          console.error(`[Contentstorage] Failed to load live editor script (attempt ${attempt}/${retries})`, error);
         }
 
         if (attempt < retries) {
           setTimeout(() => loadScript(attempt + 1), delay);
         } else {
-          console.error(`[ContentStorage] All ${retries} attempts to load live editor script failed`);
+          console.error(`[Contentstorage] All ${retries} attempts to load live editor script failed`);
           resolve(false);
         }
       };
@@ -349,7 +349,7 @@ export function trackTranslation(
   memoryMap.set(translationValue, entry);
 
   if (debug) {
-    console.log('[ContentStorage] Tracked translation:', {
+    console.log('[Contentstorage] Tracked translation:', {
       value: translationValue,
       key: normalizedKey,
       namespace,
@@ -424,11 +424,11 @@ export function flattenTranslations(
 export function debugMemoryMap(): void {
   const memoryMap = getMemoryMap();
   if (!memoryMap) {
-    console.log('[ContentStorage] Memory map not initialized');
+    console.log('[Contentstorage] Memory map not initialized');
     return;
   }
 
-  console.log('[ContentStorage] Memory map contents:');
+  console.log('[Contentstorage] Memory map contents:');
   console.log(`Total entries: ${memoryMap.size}`);
 
   const entries = Array.from(memoryMap.entries()).slice(0, 10);
