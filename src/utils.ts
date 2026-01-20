@@ -121,7 +121,13 @@ export function loadLiveEditorScript(
       return;
     }
 
-    const cdnScriptUrl = customScriptUrl || 'https://cdn.contentstorage.app/live-editor.js?contentstorage-live-editor=true';
+    let cdnScriptUrl = customScriptUrl || 'https://cdn.contentstorage.app/live-editor.js?contentstorage-live-editor=true';
+
+    // Add pip_mode URL parameter if in pip mode
+    if (mode === 'pip') {
+      const separator = cdnScriptUrl.includes('?') ? '&' : '?';
+      cdnScriptUrl += `${separator}pip_mode=true`;
+    }
 
     const loadScript = (attempt: number = 1) => {
       if (debug) {
@@ -131,10 +137,6 @@ export function loadLiveEditorScript(
       const scriptElement = win.document.createElement('script');
       scriptElement.type = 'text/javascript';
       scriptElement.src = cdnScriptUrl;
-
-      if (mode) {
-        scriptElement.dataset.mode = mode;
-      }
 
       scriptElement.onload = () => {
         if (debug) {
