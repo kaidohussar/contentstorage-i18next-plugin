@@ -10,6 +10,7 @@ import type {
 } from './types';
 import {
   detectLiveEditorMode,
+  detectPipMode,
   initializeMemoryMap,
   trackTranslation,
   cleanupMemoryMap,
@@ -17,11 +18,6 @@ import {
   isBrowser,
   loadLiveEditorScript,
 } from './utils';
-import {
-  detectScreenshotMode,
-  cleanScreenshotUrlParams,
-  exposeApiKey,
-} from './screenshot';
 import { ContentstorageLiveEditorPostProcessor } from './post-processor';
 
 /**
@@ -59,8 +55,6 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
   private options: ContentstoragePluginOptions;
   private isLiveMode: boolean = false;
   private postProcessor?: ContentstorageLiveEditorPostProcessor;
-  private services?: Services;
-  private i18nextOptions?: InitOptions;
 
   constructor(_services?: Services, options?: ContentstoragePluginOptions, _i18nextOptions?: InitOptions) {
     this.options = options || {};
@@ -81,10 +75,6 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
     backendOptions: ContentstoragePluginOptions = {},
     i18nextOptions: InitOptions = {}
   ): void {
-    // Store for use in initializeScreenshotMode
-    this.services = services;
-    this.i18nextOptions = i18nextOptions;
-
     this.options = {
       debug: false,
       maxMemoryMapSize: 10000,
@@ -103,8 +93,18 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
       // Initialize memory map
       initializeMemoryMap();
 
+      // Detect pip mode to pass to script loading
+      const isPipMode = detectPipMode();
+      const scriptMode = isPipMode ? 'pip' : undefined;
+
       // Load the live editor script
-      loadLiveEditorScript(2, 3000, this.options.debug, this.options.customLiveEditorScriptUrl).then((loaded) => {
+      loadLiveEditorScript(
+        2,
+        3000,
+        this.options.debug,
+        this.options.customLiveEditorScriptUrl,
+        scriptMode
+      ).then((loaded) => {
         if (loaded) {
           if (this.options.debug) {
             console.log('[Contentstorage] Live editor ready');
@@ -119,49 +119,14 @@ export class ContentstorageBackend implements BackendModule<ContentstoragePlugin
 
       if (this.options.debug) {
         console.log('[Contentstorage] Live editor mode enabled');
+        if (isPipMode) {
+          console.log('[Contentstorage] PiP mode detected');
+        }
         console.log('[Contentstorage] Post-processor auto-registered');
         console.log('[Contentstorage] Plugin initialized with options:', this.options);
       }
     } else if (this.options.debug) {
       console.log('[Contentstorage] Running in normal mode (not live editor)');
-    }
-
-    // Check for screenshot mode (works in local dev without iframe)
-    this.initializeScreenshotMode();
-  }
-
-  /**
-   * Initialize screenshot mode if URL params indicate it
-   * Exposes the API key for live-editor.js to use
-   */
-  private initializeScreenshotMode(): void {
-    const screenshotConfig = detectScreenshotMode();
-
-    if (!screenshotConfig) return;
-
-    if (this.options.debug) {
-      console.log('[Contentstorage] Screenshot mode detected');
-    }
-
-    // Initialize memory map for translation tracking
-    initializeMemoryMap();
-
-    // Expose API key for live-editor.js to use
-    exposeApiKey(screenshotConfig.contentstorageKey);
-
-    // Clean URL params for security
-    cleanScreenshotUrlParams();
-
-    // Register post-processor for translation tracking
-    if (this.services && this.i18nextOptions) {
-      this.registerPostProcessor(this.services, this.i18nextOptions);
-    }
-
-    // Load live-editor.js script (handles screenshot UI)
-    loadLiveEditorScript(2, 3000, this.options.debug, this.options.customLiveEditorScriptUrl);
-
-    if (this.options.debug) {
-      console.log('[Contentstorage] Screenshot mode initialized: memory map, post-processor, API key exposed');
     }
   }
 

@@ -33,17 +33,51 @@ export function detectLiveEditorMode(
     const win = getContentstorageWindow();
     if (!win) return false;
 
-    // Check 1: Running in an iframe
-    const inIframe = win.self !== win.top;
-
-    // Check 2: URL has the live editor marker
     const urlParams = new URLSearchParams(win.location.search);
     const hasMarker = urlParams.has(liveEditorParam);
 
-    return !!(inIframe && hasMarker);
+    if (!hasMarker) return false;
+
+    // Check 1: Running in an iframe (standard live editor)
+    const inIframe = win.self !== win.top;
+    if (inIframe) return true;
+
+    // Check 2: PiP mode (popup with opener)
+    const isPipMode = urlParams.get('pip_mode') === 'true' && !!win.opener;
+    if (isPipMode) return true;
+
+    return false;
   } catch (e) {
     // Cross-origin restrictions might block window.top access
     // This is expected when not in live editor mode
+    return false;
+  }
+}
+
+/**
+ * Detects if the application is running in PiP (Picture-in-Picture) mode
+ * PiP mode requires pip_mode=true URL param and window.opener
+ *
+ * @returns true if in PiP mode
+ */
+export function detectPipMode(): boolean {
+  if (!isBrowser()) return false;
+
+  const win = getContentstorageWindow();
+  if (!win) return false;
+
+  try {
+    const urlParams = new URLSearchParams(win.location.search);
+
+    if (urlParams.get('pip_mode') !== 'true') return false;
+
+    if (!win.opener) {
+      console.warn('[Contentstorage] PiP mode requires opener window');
+      return false;
+    }
+
+    return true;
+  } catch {
     return false;
   }
 }
@@ -72,7 +106,8 @@ export function loadLiveEditorScript(
   retries: number = 2,
   delay: number = 3000,
   debug: boolean = false,
-  customScriptUrl?: string
+  customScriptUrl?: string,
+  mode?: string
 ): Promise<boolean> {
   // Return existing promise if already loading
   if (liveEditorReadyPromise) {
@@ -96,6 +131,10 @@ export function loadLiveEditorScript(
       const scriptElement = win.document.createElement('script');
       scriptElement.type = 'text/javascript';
       scriptElement.src = cdnScriptUrl;
+
+      if (mode) {
+        scriptElement.dataset.mode = mode;
+      }
 
       scriptElement.onload = () => {
         if (debug) {

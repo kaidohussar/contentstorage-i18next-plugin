@@ -1,7 +1,6 @@
 import type { PostProcessorModule } from 'i18next';
 import type { ContentstoragePluginOptions } from './types';
-import { trackTranslation, detectLiveEditorMode, initializeMemoryMap, loadLiveEditorScript, extractUserVariables, setCurrentLanguageCode, clearMemoryMap, getContentstorageWindow } from './utils';
-import { detectScreenshotMode, cleanScreenshotUrlParams, exposeApiKey } from './screenshot';
+import { trackTranslation, detectLiveEditorMode, detectPipMode, initializeMemoryMap, loadLiveEditorScript, extractUserVariables, setCurrentLanguageCode, clearMemoryMap, getContentstorageWindow } from './utils';
 
 /**
  * Contentstorage Live Editor Post-Processor
@@ -59,64 +58,26 @@ export class ContentstorageLiveEditorPostProcessor implements PostProcessorModul
         : 'en';
       setCurrentLanguageCode(browserLanguage);
 
+      // Detect pip mode to pass to script loading
+      const isPipMode = detectPipMode();
+      const scriptMode = isPipMode ? 'pip' : undefined;
+
       // Load the live editor script
-      loadLiveEditorScript(2, 3000, this.options.debug, this.options.customLiveEditorScriptUrl);
+      loadLiveEditorScript(2, 3000, this.options.debug, this.options.customLiveEditorScriptUrl, scriptMode);
 
       if (this.options.debug) {
         console.log('[Contentstorage] Post-processor initialized in live mode');
+        if (isPipMode) {
+          console.log('[Contentstorage] PiP mode detected');
+        }
         console.log(`[Contentstorage] Initial language code set to: ${browserLanguage}`);
       }
-    }
-
-    // Check for screenshot mode (works without iframe)
-    this.initializeScreenshotMode();
-  }
-
-  /**
-   * Initialize screenshot mode if URL params indicate it
-   * Works without iframe, unlike live editor mode
-   */
-  private initializeScreenshotMode(): void {
-    // Skip if already in live mode (already initialized)
-    if (this.isLiveMode) return;
-
-    const screenshotConfig = detectScreenshotMode();
-    if (!screenshotConfig) return;
-
-    if (this.options.debug) {
-      console.log('[Contentstorage] Screenshot mode detected');
-    }
-
-    // Initialize memory map for translation tracking
-    initializeMemoryMap();
-
-    // Initialize current language code
-    const browserLanguage = typeof navigator !== 'undefined' && navigator.language
-      ? navigator.language.split('-')[0]
-      : 'en';
-    setCurrentLanguageCode(browserLanguage);
-
-    // Expose API key for live-editor.js to use
-    exposeApiKey(screenshotConfig.contentstorageKey);
-
-    // Clean URL params for security
-    cleanScreenshotUrlParams();
-
-    // Enable tracking (reuse existing flag so process() tracks translations)
-    this.isLiveMode = true;
-
-    // Load live-editor.js script
-    loadLiveEditorScript(2, 3000, this.options.debug, this.options.customLiveEditorScriptUrl);
-
-    if (this.options.debug) {
-      console.log('[Contentstorage] Screenshot mode initialized');
-      console.log(`[Contentstorage] Initial language code set to: ${browserLanguage}`);
     }
   }
 
   /**
    * Expose refresh function on window for live-editor.js to call
-   * Only exposed in live mode (live editor or screenshot mode)
+   * Only exposed in live mode (live editor or pip mode)
    */
   private exposeRefreshFunction(): void {
     if (!this.isLiveMode) return;
