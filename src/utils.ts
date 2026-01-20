@@ -26,30 +26,73 @@ export function detectLiveEditorMode(
   liveEditorParam: string = 'contentstorage_live_editor',
   forceLiveMode: boolean = false
 ): boolean {
-  if (forceLiveMode) return true;
-  if (!isBrowser()) return false;
+  console.log('[Contentstorage Debug] detectLiveEditorMode called', {
+    liveEditorParam,
+    forceLiveMode,
+  });
+
+  if (forceLiveMode) {
+    console.log('[Contentstorage Debug] forceLiveMode is true, returning true');
+    return true;
+  }
+  if (!isBrowser()) {
+    console.log('[Contentstorage Debug] Not in browser, returning false');
+    return false;
+  }
 
   try {
     const win = getContentstorageWindow();
-    if (!win) return false;
+    if (!win) {
+      console.log('[Contentstorage Debug] No window object, returning false');
+      return false;
+    }
 
     const urlParams = new URLSearchParams(win.location.search);
     const hasMarker = urlParams.has(liveEditorParam);
 
-    if (!hasMarker) return false;
+    console.log('[Contentstorage Debug] URL params check', {
+      search: win.location.search,
+      hasMarker,
+      liveEditorParam,
+    });
+
+    if (!hasMarker) {
+      console.log('[Contentstorage Debug] No marker param found, returning false');
+      return false;
+    }
 
     // Check 1: Running in an iframe (standard live editor)
     const inIframe = win.self !== win.top;
-    if (inIframe) return true;
+    console.log('[Contentstorage Debug] Iframe check', { inIframe });
+    if (inIframe) {
+      console.log('[Contentstorage Debug] In iframe, returning true');
+      return true;
+    }
 
     // Check 2: PiP mode (popup with opener)
-    const isPipMode = urlParams.get('pip_mode') === 'true' && !!win.opener;
-    if (isPipMode) return true;
+    const pipModeParam = urlParams.get('pip_mode');
+    const hasOpener = !!win.opener;
+    const isPipMode = pipModeParam === 'true' && hasOpener;
 
+    console.log('[Contentstorage Debug] PiP mode check', {
+      pipModeParam,
+      hasOpener,
+      openerType: typeof win.opener,
+      opener: win.opener,
+      isPipMode,
+    });
+
+    if (isPipMode) {
+      console.log('[Contentstorage Debug] PiP mode valid, returning true');
+      return true;
+    }
+
+    console.log('[Contentstorage Debug] No valid mode detected, returning false');
     return false;
   } catch (e) {
     // Cross-origin restrictions might block window.top access
     // This is expected when not in live editor mode
+    console.log('[Contentstorage Debug] Exception caught', e);
     return false;
   }
 }
@@ -61,23 +104,45 @@ export function detectLiveEditorMode(
  * @returns true if in PiP mode
  */
 export function detectPipMode(): boolean {
-  if (!isBrowser()) return false;
+  console.log('[Contentstorage Debug] detectPipMode called');
+
+  if (!isBrowser()) {
+    console.log('[Contentstorage Debug] detectPipMode: Not in browser');
+    return false;
+  }
 
   const win = getContentstorageWindow();
-  if (!win) return false;
+  if (!win) {
+    console.log('[Contentstorage Debug] detectPipMode: No window');
+    return false;
+  }
 
   try {
     const urlParams = new URLSearchParams(win.location.search);
+    const pipModeParam = urlParams.get('pip_mode');
 
-    if (urlParams.get('pip_mode') !== 'true') return false;
+    console.log('[Contentstorage Debug] detectPipMode check', {
+      pipModeParam,
+      hasOpener: !!win.opener,
+      openerType: typeof win.opener,
+      opener: win.opener,
+      locationOrigin: win.location.origin,
+    });
 
-    if (!win.opener) {
-      console.warn('[Contentstorage] PiP mode requires opener window');
+    if (pipModeParam !== 'true') {
+      console.log('[Contentstorage Debug] detectPipMode: pip_mode param not true');
       return false;
     }
 
+    if (!win.opener) {
+      console.warn('[Contentstorage] PiP mode requires opener window (cross-origin openers are nullified by browsers)');
+      return false;
+    }
+
+    console.log('[Contentstorage Debug] detectPipMode: returning true');
     return true;
-  } catch {
+  } catch (e) {
+    console.log('[Contentstorage Debug] detectPipMode: exception', e);
     return false;
   }
 }
