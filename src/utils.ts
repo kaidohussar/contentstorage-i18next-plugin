@@ -15,6 +15,21 @@ export function getContentstorageWindow(): ContentstorageWindow | null {
   return window as ContentstorageWindow;
 }
 
+// SessionStorage key for PiP mode persistence (must match live-editor's key)
+const PIP_MODE_STORAGE_KEY = 'contentstorage_pip_mode';
+
+/**
+ * Check if PiP mode is stored in sessionStorage
+ * This persists across page refreshes and navigation within the customer site
+ */
+function isPipModeInStorage(): boolean {
+  try {
+    return sessionStorage.getItem(PIP_MODE_STORAGE_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Detects if the application is running in ContentStorage live editor mode
  *
@@ -56,34 +71,41 @@ export function detectLiveEditorMode(
       liveEditorParam,
     });
 
-    if (!hasMarker) {
-      console.log('[Contentstorage Debug] No marker param found, returning false');
-      return false;
-    }
-
     // Check 1: Running in an iframe (standard live editor)
     const inIframe = win.self !== win.top;
-    console.log('[Contentstorage Debug] Iframe check', { inIframe });
-    if (inIframe) {
-      console.log('[Contentstorage Debug] In iframe, returning true');
+    
+    if (inIframe && hasMarker) {
+      console.log('[Contentstorage Debug] In iframe with marker, returning true');
       return true;
     }
 
-    // Check 2: PiP mode (popup with opener)
+    // Check 2: PiP mode via URL params (initial load)
     const pipModeParam = urlParams.get('pip_mode');
     const hasOpener = !!win.opener;
-    const isPipMode = pipModeParam === 'true' && hasOpener;
+    const isPipModeFromUrl = pipModeParam === 'true' && hasOpener;
 
-    console.log('[Contentstorage Debug] PiP mode check', {
+    console.log('[Contentstorage Debug] PiP mode URL check', {
       pipModeParam,
       hasOpener,
       openerType: typeof win.opener,
       opener: win.opener,
-      isPipMode,
+      isPipModeFromUrl,
     });
 
-    if (isPipMode) {
-      console.log('[Contentstorage Debug] PiP mode valid, returning true');
+    if (isPipModeFromUrl) {
+      console.log('[Contentstorage Debug] PiP mode from URL valid, returning true');
+      return true;
+    }
+
+    // Check 3: PiP mode via sessionStorage (after refresh/navigation)
+    // This handles the case where window.opener is lost after page refresh
+    const isPipModeFromStorage = isPipModeInStorage();
+    console.log('[Contentstorage Debug] PiP mode sessionStorage check', {
+      isPipModeFromStorage,
+    });
+
+    if (isPipModeFromStorage) {
+      console.log('[Contentstorage Debug] PiP mode from sessionStorage, returning true');
       return true;
     }
 
